@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Awesome Mini App</title>
+    <title>Mera Quiz Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Mera Mini App</h1>
-        <p>Ye Truecaller/Agar.io jaise platforms ke liye perfect hai!</p>
-        
-        <button onclick="showAlert()">Test Alert</button>
-        <button onclick="changeBackground()">Background Change</button>
-        <button onclick="addItem()">Add Item</button>
-        
-        <h3>Items List:</h3>
-        <ul id="itemList"></ul>
+        <div id="startScreen">
+            <h1>🎯 Mera Quiz Game</h1>
+            <p>Test your knowledge with these questions!</p>
+            <button onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div id="quizScreen" style="display: none;">
+            <h2 id="question">Question will appear here</h2>
+            <div id="options" class="options"></div>
+            <p>Score: <span id="score">0</span></p>
+            <p>Question: <span id="currentQ">1</span>/5</p>
+        </div>
+
+        <div id="resultScreen" style="display: none;">
+            <h1>Quiz Completed! 🎉</h1>
+            <h2>Your Score: <span id="finalScore">0</span>/5</h2>
+            <button onclick="restartQuiz()">Play Again</button>
+        </div>
     </div>
     
     <script src="script.js"></script>
