@@ -1,6 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
+    font-family: 'Arial', sans-serif;
+    max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -17,15 +17,16 @@ body {
 }
 
 button {
-    padding: 12px 24px;
+    padding: 15px 30px;
     background: #ff6b6b;
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
     margin: 10px;
-    font-size: 16px;
+    font-size: 18px;
     transition: all 0.3s;
+    width: 200px;
 }
 
 button:hover {
@@ -33,14 +34,40 @@ button:hover {
     transform: translateY(-2px);
 }
 
-ul {
-    list-style: none;
-    padding: 0;
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
 }
 
-li {
+.option-btn {
+    padding: 15px;
     background: rgba(255, 255, 255, 0.2);
-    padding: 10px;
-    margin: 5px;
-    border-radius: 5px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+}
+
+.option-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.02);
+}
+
+.correct {
+    background: #1dd1a1 !important;
+    border-color: #10ac84 !important;
+}
+
+.wrong {
+    background: #ff6b6b !important;
+    border-color: #ee5253 !important;
+}
+
+#score {
+    font-size: 24px;
+    font-weight: bold;
+    color: #feca57;
 }
