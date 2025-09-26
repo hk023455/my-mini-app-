@@ -578,3 +578,131 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Global variable
 let premiumGenerator;
+// Admin Password Configuration
+const ADMIN_CONFIG = {
+    MASTER_PASSWORD: "kartik@6201",
+    SECRET_CODE: "admin123", // For URL access
+    SESSION_TIMEOUT: 30 * 60 * 1000 // 30 minutes
+};
+
+// Show Admin Login
+function showAdminLogin() {
+    document.getElementById('adminLoginModal').style.display = 'block';
+    document.getElementById('adminPassword').focus();
+}
+
+// Check Admin Password
+function checkAdminPassword() {
+    const password = document.getElementById('adminPassword').value;
+    const errorElement = document.getElementById('adminLoginError');
+    
+    if (password === ADMIN_CONFIG.MASTER_PASSWORD) {
+        // Successful login
+        document.getElementById('adminLoginModal').style.display = 'none';
+        document.getElementById('advancedAdminPanel').style.display = 'block';
+        
+        // Log access
+        logAdminAccess('SUCCESS');
+        
+        // Start session timer
+        startAdminSession();
+        
+        // Load admin data
+        loadAdminDashboard();
+        
+    } else {
+        errorElement.textContent = "❌ Access Denied! Invalid password.";
+        logAdminAccess('FAILED');
+        
+        // Security delay
+        setTimeout(() => {
+            errorElement.textContent = "";
+        }, 3000);
+    }
+}
+
+// Admin Session Management
+let adminSessionTimer;
+function startAdminSession() {
+    // Clear existing timer
+    if (adminSessionTimer) clearTimeout(adminSessionTimer);
+    
+    // Set new timer
+    adminSessionTimer = setTimeout(() => {
+        logoutAdmin();
+        alert("Admin session expired due to inactivity.");
+    }, ADMIN_CONFIG.SESSION_TIMEOUT);
+}
+
+function logoutAdmin() {
+    document.getElementById('advancedAdminPanel').style.display = 'none';
+    document.getElementById('adminPassword').value = "";
+    
+    if (adminSessionTimer) {
+        clearTimeout(adminSessionTimer);
+    }
+    
+    logAdminAccess('LOGOUT');
+}
+
+// Log Admin Access
+function logAdminAccess(action) {
+    const log = {
+        timestamp: new Date().toISOString(),
+        action: action,
+        ip: 'user_ip', // You can get actual IP
+        userAgent: navigator.userAgent
+    };
+    
+    const logs = JSON.parse(localStorage.getItem('adminAccessLogs') || '[]');
+    logs.push(log);
+    localStorage.setItem('adminAccessLogs', JSON.stringify(logs));
+}
+
+// Advanced Admin Functions
+function loadAdminDashboard() {
+    // Load real-time data
+    updateLiveStats();
+    loadActivityFeed();
+    loadFinancialData();
+}
+
+function updateLiveStats() {
+    // Update all statistics in real-time
+    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    document.getElementById('liveUsers').textContent = users.length;
+    
+    // Update other stats...
+}
+
+// System Controls
+function systemShutdown() {
+    if (confirm("🚨 ARE YOU SURE? This will temporarily disable the system!")) {
+        // Implement shutdown logic
+        alert("System shutdown initiated...");
+    }
+}
+
+// Tab Management
+document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tabName = this.getAttribute('data-tab');
+        openAdminTab(tabName);
+    });
+});
+
+function openAdminTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-pane').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active from buttons
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    event.currentTarget.classList.add('active');
+}
