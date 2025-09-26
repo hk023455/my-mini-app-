@@ -521,3 +521,468 @@
         </div>
     </div>
 </div>
+<!-- Services Grid ke baad ek secret admin card -->
+<div class="service-card-3d secret-admin" onclick="showAdminLogin()" style="display: none;">
+    <div class="service-icon-3d">👑</div>
+    <h3>ADMIN PANEL</h3>
+    <p>Restricted Access</p>
+    <div class="secret-badge">SECRET</div>
+    <div class="card-hover-effect"></div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminLoginModal" class="admin-login-modal">
+    <div class="admin-login-content">
+        <div class="login-header">
+            <h3>🔐 ADMIN ACCESS</h3>
+            <p>Enter master password</p>
+        </div>
+        
+        <div class="password-input-group">
+            <input type="password" id="adminPassword" placeholder="Enter admin password" 
+                   class="admin-password-input" onkeypress="handleAdminKeyPress(event)">
+            <button onclick="checkAdminPassword()" class="password-toggle">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        
+        <button onclick="checkAdminPassword()" class="admin-login-btn">
+            <i class="fas fa-unlock"></i> ACCESS ADMIN PANEL
+        </button>
+        
+        <div id="adminLoginError" class="error-message"></div>
+        
+        <div class="security-notice">
+            <i class="fas fa-shield-alt"></i>
+            <span>This action is logged for security</span>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Admin Panel (Hidden) -->
+<div id="advancedAdminPanel" class="advanced-admin-panel">
+    <div class="admin-header-advanced">
+        <div class="admin-title-section">
+            <div class="admin-avatar">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div>
+                <h1>ADMIN COMMAND CENTER</h1>
+                <p>Premium Generator Pro • Master Control</p>
+            </div>
+        </div>
+        
+        <div class="admin-controls">
+            <div class="admin-status">
+                <span class="status-indicator online"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+            <button class="control-btn danger" onclick="systemShutdown()">
+                <i class="fas fa-power-off"></i> SHUTDOWN
+            </button>
+            <button class="control-btn warning" onclick="logoutAdmin()">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
+            </button>
+        </div>
+    </div>
+
+    <!-- Advanced Admin Tabs -->
+    <div class="admin-nav-advanced">
+        <button class="nav-btn active" data-tab="overview">
+            <i class="fas fa-chart-network"></i> OVERVIEW
+        </button>
+        <button class="nav-btn" data-tab="accounts">
+            <i class="fas fa-database"></i> ACCOUNTS DB
+        </button>
+        <button class="nav-btn" data-tab="users">
+            <i class="fas fa-users-cog"></i> USERS CONTROL
+        </button>
+        <button class="nav-btn" data-tab="financial">
+            <i class="fas fa-coins"></i> FINANCIAL
+        </button>
+        <button class="nav-btn" data-tab="automation">
+            <i class="fas fa-robot"></i> AUTOMATION
+        </button>
+        <button class="nav-btn" data-tab="security">
+            <i class="fas fa-shield-halved"></i> SECURITY
+        </button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="admin-content-advanced">
+        <!-- Overview Tab -->
+        <div id="overviewTab" class="tab-pane active">
+            <div class="real-time-stats">
+                <div class="stat-card-advanced">
+                    <i class="fas fa-rocket"></i>
+                    <div class="stat-data">
+                        <span class="stat-number" id="liveUsers">0</span>
+                        <span class="stat-label">LIVE USERS</span>
+                    </div>
+                    <div class="stat-trend up">+12%</div>
+                </div>
+                <!-- More stat cards -->
+            </div>
+            
+            <div class="live-monitoring">
+                <h3>📊 LIVE ACTIVITY MONITOR</h3>
+                <div class="activity-feed" id="adminActivityFeed"></div>
+            </div>
+        </div>
+
+        <!-- Accounts Database Tab -->
+        <div id="accountsTab" class="tab-pane">
+            <div class="database-controls">
+                <button class="db-btn primary" onclick="importAccounts()">
+                    <i class="fas fa-file-import"></i> BULK IMPORT
+                </button>
+                <button class="db-btn success" onclick="generateAccounts()">
+                    <i class="fas fa-plus"></i> AUTO-GENERATE
+                </button>
+                <button class="db-btn danger" onclick="clearAllAccounts()">
+                    <i class="fas fa-trash"></i> PURGE DB
+                </button>
+            </div>
+            
+            <div class="database-view">
+                <!-- Advanced accounts management -->
+            </div>
+        </div>
+
+        <!-- Users Control Tab -->
+        <div id="usersTab" class="tab-pane">
+            <div class="user-controls">
+                <div class="search-section">
+                    <input type="text" id="userSearchAdvanced" placeholder="🔍 Search users by ID, IP, email..." 
+                           class="advanced-search">
+                    <button onclick="advancedUserSearch()" class="search-btn-advanced">
+                        <i class="fas fa-search"></i> DEEP SCAN
+                    </button>
+                </div>
+                
+                <div class="user-actions-grid">
+                    <button class="action-btn" onclick="massMessageUsers()">
+                        <i class="fas fa-broadcast-tower"></i> MASS MESSAGE
+                    </button>
+                    <button class="action-btn" onclick="exportUserData()">
+                        <i class="fas fa-download"></i> EXPORT DATA
+                    </button>
+                    <button class="action-btn danger" onclick="banMultipleUsers()">
+                        <i class="fas fa-ban"></i> BATCH BAN
+                    </button>
+                </div>
+            </div>
+            
+            <div class="users-grid-advanced" id="usersGridAdvanced"></div>
+        </div>
+
+        <!-- Financial Tab -->
+        <div id="financialTab" class="tab-pane">
+            <div class="revenue-dashboard">
+                <div class="financial-cards">
+                    <div class="finance-card">
+                        <h4>TOTAL REVENUE</h4>
+                        <span class="amount">₹<span id="totalRevenue">0</span></span>
+                    </div>
+                    <div class="finance-card">
+                        <h4>PENDING</h4>
+                        <span class="amount pending">₹<span id="pendingRevenue">0</span></span>
+                    </div>
+                    <div class="finance-card">
+                        <h4>TODAY'S INCOME</h4>
+                        <span class="amount today">₹<span id="todayRevenue">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="payment-verification">
+                    <h4>💰 PAYMENT VERIFICATION QUEUE</h4>
+                    <div id="paymentQueue"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Tab -->
+        <div id="automationTab" class="tab-pane">
+            <div class="automation-controls">
+                <h3>🤖 SMART AUTOMATION SYSTEM</h3>
+                
+                <div class="automation-card">
+                    <h4>🔄 AUTO-ACCOUNT REFILL</h4>
+                    <div class="toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="autoRefillToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>Enable automatic account refill</span>
+                    </div>
+                </div>
+                
+                <div class="automation-card">
+                    <h4>📧 AUTO-RESPONSE SYSTEM</h4>
+                    <textarea id="autoResponseTemplate" class="auto-response-area" 
+                              placeholder="Enter auto-response template..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="securityTab" class="tab-pane">
+            <div class="security-dashboard">
+                <h3>🛡️ SECURITY COMMAND CENTER</h3>
+                
+                <div class="security-cards">
+                    <div class="security-card">
+                        <h4>IP MONITORING</h4>
+                        <div class="ip-list" id="suspiciousIPs"></div>
+                    </div>
+                    
+                    <div class="security-card">
+                        <h4>ACCESS LOGS</h4>
+                        <div class="access-logs" id="adminAccessLogs"></div>
+                    </div>
+                </div>
+                
+                <div class="security-actions">
+                    <button class="security-btn" onclick="backupSystem()">
+                        <i class="fas fa-save"></i> BACKUP SYSTEM
+                    </button>
+                    <button class="security-btn danger" onclick="resetSystem()">
+                        <i class="fas fa-exclamation-triangle"></i> FACTORY RESET
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div><!-- Services Grid ke baad ek secret admin card -->
+<div class="service-card-3d secret-admin" onclick="showAdminLogin()" style="display: none;">
+    <div class="service-icon-3d">👑</div>
+    <h3>ADMIN PANEL</h3>
+    <p>Restricted Access</p>
+    <div class="secret-badge">SECRET</div>
+    <div class="card-hover-effect"></div>
+</div>
+
+<!-- Admin Login Modal -->
+<div id="adminLoginModal" class="admin-login-modal">
+    <div class="admin-login-content">
+        <div class="login-header">
+            <h3>🔐 ADMIN ACCESS</h3>
+            <p>Enter master password</p>
+        </div>
+        
+        <div class="password-input-group">
+            <input type="password" id="adminPassword" placeholder="Enter admin password" 
+                   class="admin-password-input" onkeypress="handleAdminKeyPress(event)">
+            <button onclick="checkAdminPassword()" class="password-toggle">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        
+        <button onclick="checkAdminPassword()" class="admin-login-btn">
+            <i class="fas fa-unlock"></i> ACCESS ADMIN PANEL
+        </button>
+        
+        <div id="adminLoginError" class="error-message"></div>
+        
+        <div class="security-notice">
+            <i class="fas fa-shield-alt"></i>
+            <span>This action is logged for security</span>
+        </div>
+    </div>
+</div>
+
+<!-- Advanced Admin Panel (Hidden) -->
+<div id="advancedAdminPanel" class="advanced-admin-panel">
+    <div class="admin-header-advanced">
+        <div class="admin-title-section">
+            <div class="admin-avatar">
+                <i class="fas fa-crown"></i>
+            </div>
+            <div>
+                <h1>ADMIN COMMAND CENTER</h1>
+                <p>Premium Generator Pro • Master Control</p>
+            </div>
+        </div>
+        
+        <div class="admin-controls">
+            <div class="admin-status">
+                <span class="status-indicator online"></span>
+                <span>SYSTEM ONLINE</span>
+            </div>
+            <button class="control-btn danger" onclick="systemShutdown()">
+                <i class="fas fa-power-off"></i> SHUTDOWN
+            </button>
+            <button class="control-btn warning" onclick="logoutAdmin()">
+                <i class="fas fa-sign-out-alt"></i> LOGOUT
+            </button>
+        </div>
+    </div>
+
+    <!-- Advanced Admin Tabs -->
+    <div class="admin-nav-advanced">
+        <button class="nav-btn active" data-tab="overview">
+            <i class="fas fa-chart-network"></i> OVERVIEW
+        </button>
+        <button class="nav-btn" data-tab="accounts">
+            <i class="fas fa-database"></i> ACCOUNTS DB
+        </button>
+        <button class="nav-btn" data-tab="users">
+            <i class="fas fa-users-cog"></i> USERS CONTROL
+        </button>
+        <button class="nav-btn" data-tab="financial">
+            <i class="fas fa-coins"></i> FINANCIAL
+        </button>
+        <button class="nav-btn" data-tab="automation">
+            <i class="fas fa-robot"></i> AUTOMATION
+        </button>
+        <button class="nav-btn" data-tab="security">
+            <i class="fas fa-shield-halved"></i> SECURITY
+        </button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="admin-content-advanced">
+        <!-- Overview Tab -->
+        <div id="overviewTab" class="tab-pane active">
+            <div class="real-time-stats">
+                <div class="stat-card-advanced">
+                    <i class="fas fa-rocket"></i>
+                    <div class="stat-data">
+                        <span class="stat-number" id="liveUsers">0</span>
+                        <span class="stat-label">LIVE USERS</span>
+                    </div>
+                    <div class="stat-trend up">+12%</div>
+                </div>
+                <!-- More stat cards -->
+            </div>
+            
+            <div class="live-monitoring">
+                <h3>📊 LIVE ACTIVITY MONITOR</h3>
+                <div class="activity-feed" id="adminActivityFeed"></div>
+            </div>
+        </div>
+
+        <!-- Accounts Database Tab -->
+        <div id="accountsTab" class="tab-pane">
+            <div class="database-controls">
+                <button class="db-btn primary" onclick="importAccounts()">
+                    <i class="fas fa-file-import"></i> BULK IMPORT
+                </button>
+                <button class="db-btn success" onclick="generateAccounts()">
+                    <i class="fas fa-plus"></i> AUTO-GENERATE
+                </button>
+                <button class="db-btn danger" onclick="clearAllAccounts()">
+                    <i class="fas fa-trash"></i> PURGE DB
+                </button>
+            </div>
+            
+            <div class="database-view">
+                <!-- Advanced accounts management -->
+            </div>
+        </div>
+
+        <!-- Users Control Tab -->
+        <div id="usersTab" class="tab-pane">
+            <div class="user-controls">
+                <div class="search-section">
+                    <input type="text" id="userSearchAdvanced" placeholder="🔍 Search users by ID, IP, email..." 
+                           class="advanced-search">
+                    <button onclick="advancedUserSearch()" class="search-btn-advanced">
+                        <i class="fas fa-search"></i> DEEP SCAN
+                    </button>
+                </div>
+                
+                <div class="user-actions-grid">
+                    <button class="action-btn" onclick="massMessageUsers()">
+                        <i class="fas fa-broadcast-tower"></i> MASS MESSAGE
+                    </button>
+                    <button class="action-btn" onclick="exportUserData()">
+                        <i class="fas fa-download"></i> EXPORT DATA
+                    </button>
+                    <button class="action-btn danger" onclick="banMultipleUsers()">
+                        <i class="fas fa-ban"></i> BATCH BAN
+                    </button>
+                </div>
+            </div>
+            
+            <div class="users-grid-advanced" id="usersGridAdvanced"></div>
+        </div>
+
+        <!-- Financial Tab -->
+        <div id="financialTab" class="tab-pane">
+            <div class="revenue-dashboard">
+                <div class="financial-cards">
+                    <div class="finance-card">
+                        <h4>TOTAL REVENUE</h4>
+                        <span class="amount">₹<span id="totalRevenue">0</span></span>
+                    </div>
+                    <div class="finance-card">
+                        <h4>PENDING</h4>
+                        <span class="amount pending">₹<span id="pendingRevenue">0</span></span>
+                    </div>
+                    <div class="finance-card">
+                        <h4>TODAY'S INCOME</h4>
+                        <span class="amount today">₹<span id="todayRevenue">0</span></span>
+                    </div>
+                </div>
+                
+                <div class="payment-verification">
+                    <h4>💰 PAYMENT VERIFICATION QUEUE</h4>
+                    <div id="paymentQueue"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automation Tab -->
+        <div id="automationTab" class="tab-pane">
+            <div class="automation-controls">
+                <h3>🤖 SMART AUTOMATION SYSTEM</h3>
+                
+                <div class="automation-card">
+                    <h4>🔄 AUTO-ACCOUNT REFILL</h4>
+                    <div class="toggle-group">
+                        <label class="switch">
+                            <input type="checkbox" id="autoRefillToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <span>Enable automatic account refill</span>
+                    </div>
+                </div>
+                
+                <div class="automation-card">
+                    <h4>📧 AUTO-RESPONSE SYSTEM</h4>
+                    <textarea id="autoResponseTemplate" class="auto-response-area" 
+                              placeholder="Enter auto-response template..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="securityTab" class="tab-pane">
+            <div class="security-dashboard">
+                <h3>🛡️ SECURITY COMMAND CENTER</h3>
+                
+                <div class="security-cards">
+                    <div class="security-card">
+                        <h4>IP MONITORING</h4>
+                        <div class="ip-list" id="suspiciousIPs"></div>
+                    </div>
+                    
+                    <div class="security-card">
+                        <h4>ACCESS LOGS</h4>
+                        <div class="access-logs" id="adminAccessLogs"></div>
+                    </div>
+                </div>
+                
+                <div class="security-actions">
+                    <button class="security-btn" onclick="backupSystem()">
+                        <i class="fas fa-save"></i> BACKUP SYSTEM
+                    </button>
+                    <button class="security-btn danger" onclick="resetSystem()">
+                        <i class="fas fa-exclamation-triangle"></i> FACTORY RESET
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
