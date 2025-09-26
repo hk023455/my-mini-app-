@@ -164,3 +164,123 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize
 console.log('⚡️ CodeBeast Generator Loaded!');
+// Admin System
+const ADMIN_PASSWORD = "kartik@6201";
+let isAdminLoggedIn = false;
+
+// Admin Functions
+function showAdminLogin() {
+    document.getElementById('adminLoginModal').style.display = 'block';
+}
+
+function checkAdminPassword() {
+    const password = document.getElementById('adminPassword').value;
+    const errorElement = document.getElementById('loginError');
+    
+    if (password === ADMIN_PASSWORD) {
+        isAdminLoggedIn = true;
+        document.getElementById('adminLoginModal').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAdminDashboard();
+    } else {
+        errorElement.textContent = "❌ Invalid password!";
+    }
+}
+
+function logoutAdmin() {
+    isAdminLoggedIn = false;
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminPassword').value = "";
+}
+
+function openTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active from buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+
+function loadAdminDashboard() {
+    updateStatistics();
+    loadAccountsList();
+    loadUsersList();
+}
+
+function updateStatistics() {
+    const users = JSON.parse(localStorage.getItem('userHistory')) || [];
+    const accounts = JSON.parse(localStorage.getItem('crunchyrollAccounts')) || [];
+    
+    const today = new Date().toDateString();
+    const todayGens = users.filter(user => 
+        new Date(user.timestamp).toDateString() === today
+    );
+    
+    document.getElementById('totalUsers').textContent = users.length;
+    document.getElementById('todayGenerations').textContent = todayGens.length;
+    document.getElementById('totalAccounts').textContent = accounts.length;
+}
+
+function showAddAccountForm() {
+    const form = document.getElementById('addAccountForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+function addAccounts() {
+    const accountsText = document.getElementById('newAccounts').value;
+    const accounts = accountsText.split('\n')
+        .filter(line => line.includes(':'))
+        .map(line => {
+            const [email, password] = line.split(':');
+            return { email: email.trim(), password: password.trim() };
+        });
+    
+    if (accounts.length > 0) {
+        const existing = JSON.parse(localStorage.getItem('crunchyrollAccounts')) || [];
+        const updated = [...existing, ...accounts];
+        localStorage.setItem('crunchyrollAccounts', JSON.stringify(updated));
+        
+        document.getElementById('newAccounts').value = "";
+        showAddAccountForm();
+        loadAccountsList();
+        alert(`✅ ${accounts.length} accounts added!`);
+    }
+}
+
+function loadAccountsList() {
+    const accounts = JSON.parse(localStorage.getItem('crunchyrollAccounts')) || [];
+    const list = document.getElementById('accountsList');
+    
+    list.innerHTML = accounts.map(acc => `
+        <div style="background: rgba(72,219,251,0.1); padding: 10px; margin: 5px 0; border-radius: 5px;">
+            <strong>${acc.email}</strong> - ${acc.password}
+        </div>
+    `).join('');
+}
+
+function loadUsersList() {
+    const users = JSON.parse(localStorage.getItem('userHistory')) || [];
+    const list = document.getElementById('usersList');
+    
+    list.innerHTML = users.map(user => `
+        <div style="background: rgba(254,202,87,0.1); padding: 10px; margin: 5px 0; border-radius: 5px;">
+            <strong>${user.email}</strong> - ${user.timestamp}
+        </div>
+    `).join('');
+}
+
+// Initialize user history if not exists
+if (!localStorage.getItem('userHistory')) {
+    localStorage.setItem('userHistory', JSON.stringify([]));
+}
+if (!localStorage.getItem('crunchyrollAccounts')) {
+    localStorage.setItem('crunchyrollAccounts', JSON.stringify([]));
+}
