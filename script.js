@@ -759,8 +759,8 @@ function hasUserProvidedProof(userId) {
 }
 // Telegram Proof Forwarding Function
 async function sendProofToTelegram(proofData) {
-    const botToken = 'YOUR_BOT_TOKEN'; // Apna bot token yahan dalo
-    const chatId = 'YOUR_GROUP_CHAT_ID'; // Apne group ka chat ID
+    const botToken = '8236893425:AAFNPK6GnoTkxyjjSI4WgRYbhwZIf_zS-9w'; // Apna bot token yahan dalo
+    const chatId = '-1003176361256'; // Apne group ka chat ID
     
     const message = `
 📋 *PROOF SUBMISSION*
