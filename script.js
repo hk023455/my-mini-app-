@@ -836,3 +836,46 @@ async function sendProofToSupport() {
     
     closeProofModal();
 }
+// Sidebar Functions
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    sidebar.classList.toggle('open');
+}
+
+function closeSidebar() {
+    document.querySelector('.sidebar').classList.remove('open');
+}
+
+// Admin Panel Close Function
+function closeAdminPanel() {
+    document.getElementById('adminPanel').style.display = 'none';
+    isAdminLoggedIn = false;
+}
+
+// Proof Modal - Force Open and Prevent Close
+function askForProof(accountData) {
+    currentProofData = accountData;
+    
+    // Force show modal
+    const proofModal = document.getElementById('proofModal');
+    proofModal.style.display = 'block';
+    proofModal.style.zIndex = '9999';
+    
+    // Disable background interactions
+    document.body.style.overflow = 'hidden';
+    
+    // Hide close button - user must submit proof
+    document.querySelector('.close-proof').style.display = 'none';
+}
+
+// Close proof modal only after proof submission
+function closeProofModal() {
+    if (!currentProofData?.status) {
+        alert("🚫 You must submit proof before closing!");
+        return;
+    }
+    
+    document.getElementById('proofModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    currentProofData = null;
+}
