@@ -1,3 +1,154 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡️ CodeBeast - Premium Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 3D Parallax Background -->
+    <div class="parallax-bg">
+        <div class="bg-layer layer-1" data-depth="0.1"></div>
+        <div class="bg-layer layer-2" data-depth="0.3"></div>
+        <div class="bg-layer layer-3" data-depth="0.6"></div>
+    </div>
+
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container-3d">
+        <!-- Header Section -->
+        <header class="header-3d">
+            <div class="logo-glitch">
+                <span class="glitch-text">⚡️ CODEBEAST GENERATOR</span>
+            </div>
+            <div class="nav-3d">
+                <span class="nav-item">🏠 Home</span>
+                <span class="nav-item">📊 Stats</span>
+                <span class="nav-item">👤 Admin</span>
+            </div>
+        </header>
+
+        <!-- Welcome Section with 3D Card -->
+        <section class="welcome-3d">
+            <div class="card-3d">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="gate-design">
+                            ╔═────────────═╗<br>
+                            <span class="welcome-title">WELCOME TO</span><br>
+                            <span class="bot-title">⚡️ CODEBEAST GENERATOR</span><br>
+                            ╚═────────────═╝
+                        </div>
+                        <div class="gate-subtitle">🔒 The Gate Is Locked...</div>
+                        <div class="gate-instruction">👉 Unlock It By Verifying Below 👇</div>
+                        
+                        <!-- Channel Verification -->
+                        <div class="channel-verify-3d">
+                            <div class="channel-item-3d">
+                                <span class="channel-icon">📺</span>
+                                <span class="channel-name">ʅσɠιƈ.. Channel</span>
+                                <button class="join-btn-3d" onclick="joinChannel()">Join</button>
+                            </div>
+                            <button class="verify-btn-3d" onclick="verifyJoin()">
+                                <span class="btn-text">✅ Verify Join</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Grid (Hidden Initially) -->
+        <section id="services3d" class="services-3d" style="display: none;">
+            <h2 class="section-title-3d">🎯 SELECT YOUR SERVICE</h2>
+            <div class="services-grid-3d">
+                <div class="service-card-3d" onclick="generateAccount('crunchyroll')">
+                    <div class="service-icon-3d">🍥</div>
+                    <h3>CRUNCHYROLL</h3>
+                    <p>Premium Anime Accounts</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+                
+                <div class="service-card-3d" onclick="openHelp()">
+                    <div class="service-icon-3d">❓</div>
+                    <h3>HELP & SUPPORT</h3>
+                    <p>Get Assistance</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+                
+                <div class="service-card-3d" onclick="showHistory()">
+                    <div class="service-icon-3d">🕓</div>
+                    <h3>GENERATION HISTORY</h3>
+                    <p>Your Account Stats</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Account Popup Modal -->
+    <div id="accountPopup" class="popup-modal">
+        <div class="popup-content-3d">
+            <div class="popup-header">
+                ╭─────────────∘◦ ✧ ◦∘─────────────╮<br>
+                <span class="popup-title">🎞️ CRUNCHY SCROLL</span><br>
+                ╰─────────────∘◦ ✧ ◦∘─────────────╯
+            </div>
+            
+            <div class="account-info-3d">
+                <div class="info-item">
+                    <span class="info-label">📧 EMAIL:</span>
+                    <span id="popupEmail" class="info-value">generating...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🔑 PASSWORD:</span>
+                    <span id="popupPassword" class="info-value">generating...</span>
+                </div>
+            </div>
+
+            <div class="popup-message">
+                🌀 Account ready for anime adventures<br>
+                🔥 Watch anime, rule reality
+            </div>
+
+            <div class="popup-actions">
+                <button class="action-btn success" onclick="markWorking()">
+                    ✅ WORKING
+                </button>
+                <button class="action-btn danger" onclick="markNotWorking()">
+                    ❌ NOT WORKING
+                </button>
+            </div>
+
+            <div class="screenshot-note">
+                📸 Please provide screenshot if account is working
+            </div>
+
+            <button class="close-popup" onclick="closePopup()">✕</button>
+        </div>
+    </div>
+
+    <!-- Confetti Container -->
+    <div id="confettiContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+<!-- Admin Access Button -->
+<button id="adminAccessBtn" class="admin-access-btn" onclick="showAdminLogin()">⚙️</button>
+
 <!-- Admin Login Modal -->
 <div id="adminLoginModal" class="admin-modal">
     <div class="admin-login-box">
@@ -11,7 +162,7 @@
     </div>
 </div>
 
-<!-- Admin Panel (Hidden Initially) -->
+<!-- Admin Panel -->
 <div id="adminPanel" class="admin-panel" style="display: none;">
     <div class="admin-header">
         <h2>⚡ ADMIN DASHBOARD</h2>
@@ -20,9 +171,8 @@
 
     <div class="admin-tabs">
         <button class="tab-btn active" onclick="openTab('statsTab')">📊 Statistics</button>
-        <button class="tab-btn" onclick="openTab('accountsTab')">📦 Account Management</button>
-        <button class="tab-btn" onclick="openTab('usersTab')">👥 User Management</button>
-        <button class="tab-btn" onclick="openTab('settingsTab')">⚙️ Settings</button>
+        <button class="tab-btn" onclick="openTab('accountsTab')">📦 Accounts</button>
+        <button class="tab-btn" onclick="openTab('usersTab')">👥 Users</button>
     </div>
 
     <!-- Statistics Tab -->
@@ -30,75 +180,39 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Total Users</h3>
-                <span id="totalUsers" class="stat-number">0</span>
+                <span id="totalUsers">0</span>
             </div>
             <div class="stat-card">
                 <h3>Today's Generations</h3>
-                <span id="todayGenerations" class="stat-number">0</span>
+                <span id="todayGenerations">0</span>
             </div>
             <div class="stat-card">
                 <h3>Total Accounts</h3>
-                <span id="totalAccounts" class="stat-number">0</span>
+                <span id="totalAccounts">0</span>
             </div>
-            <div class="stat-card">
-                <h3>Working Accounts</h3>
-                <span id="workingAccounts" class="stat-number">0</span>
-            </div>
-        </div>
-
-        <div class="chart-container">
-            <h3>📈 Generation Analytics</h3>
-            <canvas id="generationChart"></canvas>
         </div>
     </div>
 
-    <!-- Accounts Management Tab -->
+    <!-- Accounts Tab -->
     <div id="accountsTab" class="tab-content">
         <div class="account-actions">
             <button onclick="showAddAccountForm()" class="action-btn">➕ Add Accounts</button>
-            <button onclick="refreshAccounts()" class="action-btn">🔄 Refresh</button>
         </div>
 
         <div id="addAccountForm" class="add-form" style="display: none;">
-            <textarea id="newAccounts" placeholder="Enter accounts in format: email:password&#10;Multiple accounts on new lines" class="account-textarea"></textarea>
+            <textarea id="newAccounts" placeholder="email:password&#10;email2:password2" class="account-textarea"></textarea>
             <button onclick="addAccounts()" class="add-btn">Add Accounts</button>
         </div>
 
         <div class="accounts-list">
-            <h3>📋 Available Accounts</h3>
-            <div id="accountsList" class="accounts-grid"></div>
+            <div id="accountsList"></div>
         </div>
     </div>
 
-    <!-- User Management Tab -->
+    <!-- Users Tab -->
     <div id="usersTab" class="tab-content">
-        <div class="user-search">
-            <input type="text" id="userSearch" placeholder="Search users by ID or name" class="search-input">
-            <button onclick="searchUsers()" class="search-btn">Search</button>
-        </div>
-
         <div class="users-list">
-            <h3>👥 Registered Users</h3>
-            <div id="usersList" class="users-grid"></div>
-        </div>
-    </div>
-
-    <!-- Settings Tab -->
-    <div id="settingsTab" class="tab-content">
-        <div class="setting-item">
-            <label>Admin Password:</label>
-            <input type="password" id="newPassword" placeholder="New password" class="setting-input">
-            <button onclick="changePassword()" class="setting-btn">Change</button>
-        </div>
-        
-        <div class="setting-item">
-            <label>Channel Links:</label>
-            <input type="text" id="mainChannel" placeholder="Main channel link" class="setting-input">
-            <input type="text" id="helpChannel" placeholder="Help channel link" class="setting-input">
-            <button onclick="updateChannels()" class="setting-btn">Update</button>
+            <div id="usersList"></div>
         </div>
     </div>
 </div>
-
-<!-- Admin Access Button (Corner mein) -->
-<button id="adminAccessBtn" class="admin-access-btn" onclick="showAdminLogin()">⚙️</button>
