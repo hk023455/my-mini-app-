@@ -422,3 +422,292 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set first section as active
     showSection('home');
 });
+// Account Management System
+const ACCOUNT_FILES = {
+    ACTIVE: "active_accounts",
+    WORKING: "working_accounts", 
+    SUSPICIOUS: "suspicious_accounts",
+    DEAD: "dead_accounts",
+    USER_HISTORY: "user_history"
+};
+
+// Initialize Account System
+function initializeAccountSystem() {
+    // Create files if not exists
+    if (!localStorage.getItem(ACCOUNT_FILES.ACTIVE)) {
+        // Add sample accounts (replace with your accounts)
+        const sampleAccounts = [
+            "premium1@crunchy.com:anime123",
+            "premium2@crunchy.com:otaku456", 
+            "premium3@crunchy.com:naruto789",
+            "premium4@crunchy.com:onepiece012",
+            "premium5@crunchy.com:dragonball345"
+        ];
+        localStorage.setItem(ACCOUNT_FILES.ACTIVE, JSON.stringify(sampleAccounts));
+    }
+    
+    // Initialize other files
+    if (!localStorage.getItem(ACCOUNT_FILES.WORKING)) {
+        localStorage.setItem(ACCOUNT_FILES.WORKING, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(ACCOUNT_FILES.SUSPICIOUS)) {
+        localStorage.setItem(ACCOUNT_FILES.SUSPICIOUS, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(ACCOUNT_FILES.DEAD)) {
+        localStorage.setItem(ACCOUNT_FILES.DEAD, JSON.stringify([]));
+    }
+    if (!localStorage.getItem(ACCOUNT_FILES.USER_HISTORY)) {
+        localStorage.setItem(ACCOUNT_FILES.USER_HISTORY, JSON.stringify([]));
+    }
+}
+
+// Get accounts from file
+function getAccounts(fileType) {
+    return JSON.parse(localStorage.getItem(fileType)) || [];
+}
+
+// Save accounts to file
+function saveAccounts(fileType, accounts) {
+    localStorage.setItem(fileType, JSON.stringify(accounts));
+}
+
+// Move account between files
+function moveAccount(account, fromFile, toFile) {
+    const fromAccounts = getAccounts(fromFile);
+    const toAccounts = getAccounts(toFile);
+    
+    const index = fromAccounts.indexOf(account);
+    if (index > -1) {
+        fromAccounts.splice(index, 1);
+        toAccounts.push(account);
+        
+        saveAccounts(fromFile, fromAccounts);
+        saveAccounts(toFile, toAccounts);
+    }
+}
+
+// Check if user already got account
+function hasUserReceivedAccount(userId) {
+    const userHistory = getAccounts(ACCOUNT_FILES.USER_HISTORY);
+    return userHistory.some(entry => entry.userId === userId && entry.account);
+}
+
+// Get user's first account if proof not provided
+function getUserFirstAccount(userId) {
+    const userHistory = getAccounts(ACCOUNT_FILES.USER_HISTORY);
+    const userEntry = userHistory.find(entry => entry.userId === userId);
+    return userEntry ? userEntry.account : null;
+}
+
+// Generate Account with New Rules
+function generateAccount(service) {
+    if (service !== 'crunchyroll') return;
+    
+    const userId = getCurrentUserId(); // You need to implement user identification
+    
+    // Check if user already got account but didn't provide proof
+    if (hasUserReceivedAccount(userId)) {
+        const firstAccount = getUserFirstAccount(userId);
+        if (firstAccount) {
+            showAccountPopup(firstAccount.email, firstAccount.password);
+            alert("⚠️ Provide proof for your first account to get new one!");
+            return;
+        }
+    }
+    
+    // Get active accounts
+    let activeAccounts = getAccounts(ACCOUNT_FILES.ACTIVE);
+    
+    if (activeAccounts.length === 0) {
+        // Try working accounts if no active accounts
+        const workingAccounts = getAccounts(ACCOUNT_FILES.WORKING);
+        if (workingAccounts.length > 0) {
+            activeAccounts = workingAccounts;
+        } else {
+            alert("❌ No accounts available at the moment!");
+            return;
+        }
+    }
+    
+    // Select random account
+    const randomIndex = Math.floor(Math.random() * activeAccounts.length);
+    const accountStr = activeAccounts[randomIndex];
+    const [email, password] = accountStr.split(':');
+    
+    // Remove from active accounts
+    activeAccounts.splice(randomIndex, 1);
+    saveAccounts(ACCOUNT_FILES.ACTIVE, activeAccounts);
+    
+    // Record in user history
+    const userHistory = getAccounts(ACCOUNT_FILES.USER_HISTORY);
+    const userEntry = userHistory.find(entry => entry.userId === userId);
+    
+    if (userEntry) {
+        userEntry.account = { email, password };
+        userEntry.timestamp = new Date().toISOString();
+    } else {
+        userHistory.push({
+            userId: userId,
+            account: { email, password },
+            timestamp: new Date().toISOString(),
+            proofProvided: false
+        });
+    }
+    
+    saveAccounts(ACCOUNT_FILES.USER_HISTORY, userHistory);
+    
+    // Show account
+    showAccountPopup(email, password);
+    
+    // Ask for proof after 5 seconds
+    setTimeout(() => {
+        askForProof({
+            email: email,
+            password: password,
+            userId: userId,
+            service: service
+        });
+    }, 5000);
+}
+
+// Proof System (Mandatory)
+function askForProof(accountData) {
+    currentProofData = accountData;
+    document.getElementById('proofModal').style.display = 'block';
+    
+    // Force proof - user can't skip
+    document.querySelector('.close-proof').style.display = 'none';
+}
+
+function submitProof(status) {
+    if (!currentProofData) return;
+    
+    currentProofData.status = status;
+    const accountStr = `${currentProofData.email}:${currentProofData.password}`;
+    
+    // Update user history
+    const userHistory = getAccounts(ACCOUNT_FILES.USER_HISTORY);
+    const userEntry = userHistory.find(entry => entry.userId === currentProofData.userId);
+    
+    if (userEntry) {
+        userEntry.proofProvided = true;
+        userEntry.proofStatus = status;
+        userEntry.proofTime = new Date().toISOString();
+        saveAccounts(ACCOUNT_FILES.USER_HISTORY, userHistory);
+    }
+    
+    // Move account based on proof
+    if (status === 'working') {
+        moveAccount(accountStr, ACCOUNT_FILES.ACTIVE, ACCOUNT_FILES.WORKING);
+        alert("✅ Account marked as WORKING! Thank you for proof.");
+    } else if (status === 'not_working') {
+        // Check if already in suspicious
+        const suspiciousAccounts = getAccounts(ACCOUNT_FILES.SUSPICIOUS);
+        
+        if (suspiciousAccounts.includes(accountStr)) {
+            // Second time not working - move to dead
+            moveAccount(accountStr, ACCOUNT_FILES.SUSPICIOUS, ACCOUNT_FILES.DEAD);
+            alert("❌ Account moved to DEAD (2nd time not working)");
+        } else {
+            // First time not working - move to suspicious
+            moveAccount(accountStr, ACCOUNT_FILES.ACTIVE, ACCOUNT_FILES.SUSPICIOUS);
+            alert("⚠️ Account marked as SUSPICIOUS (1st time not working)");
+        }
+    }
+    
+    closeProofModal();
+}
+
+function sendProofToSupport() {
+    if (!currentProofData) return;
+    
+    const proofInfo = `
+📋 PROOF SUBMISSION
+├─ Account: ${currentProofData.email}
+├─ Status: ${currentProofData.status || 'Unknown'}
+├─ User ID: ${currentProofData.userId}
+└─ Time: ${new Date().toLocaleString()}
+    `;
+    
+    // Save proof details
+    const proofs = JSON.parse(localStorage.getItem('proofHistory')) || [];
+    proofs.push({
+        ...currentProofData,
+        timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('proofHistory', JSON.stringify(proofs));
+    
+    alert(`✅ Proof submitted successfully!\n\n${proofInfo}`);
+    closeProofModal();
+}
+
+function closeProofModal() {
+    // Don't allow closing without proof
+    if (!currentProofData?.status) {
+        alert("⚠️ You must provide proof before closing!");
+        return;
+    }
+    document.getElementById('proofModal').style.display = 'none';
+    currentProofData = null;
+}
+
+// User Identification (Simple method - you can improve this)
+function getCurrentUserId() {
+    let userId = localStorage.getItem('currentUserId');
+    if (!userId) {
+        userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('currentUserId', userId);
+    }
+    return userId;
+}
+
+// Admin Functions for Account Management
+function addAccountsToFile() {
+    const accountsText = document.getElementById('newAccounts').value;
+    const accounts = accountsText.split('\n')
+        .filter(line => line.trim() && line.includes(':'))
+        .map(line => line.trim());
+    
+    if (accounts.length > 0) {
+        const activeAccounts = getAccounts(ACCOUNT_FILES.ACTIVE);
+        const updatedAccounts = [...activeAccounts, ...accounts];
+        saveAccounts(ACCOUNT_FILES.ACTIVE, updatedAccounts);
+        
+        document.getElementById('newAccounts').value = "";
+        alert(`✅ ${accounts.length} accounts added to ACTIVE file!`);
+        loadAccountsList();
+    }
+}
+
+function loadAccountsList() {
+    const activeAccounts = getAccounts(ACCOUNT_FILES.ACTIVE);
+    const workingAccounts = getAccounts(ACCOUNT_FILES.WORKING);
+    const suspiciousAccounts = getAccounts(ACCOUNT_FILES.SUSPICIOUS);
+    const deadAccounts = getAccounts(ACCOUNT_FILES.DEAD);
+    
+    document.getElementById('accountsList').innerHTML = `
+        <div class="account-file">
+            <h4>🟢 ACTIVE Accounts (${activeAccounts.length})</h4>
+            ${activeAccounts.map(acc => `<div class="account-item">${acc}</div>`).join('')}
+        </div>
+        <div class="account-file">
+            <h4>✅ WORKING Accounts (${workingAccounts.length})</h4>
+            ${workingAccounts.map(acc => `<div class="account-item">${acc}</div>`).join('')}
+        </div>
+        <div class="account-file">
+            <h4>⚠️ SUSPICIOUS Accounts (${suspiciousAccounts.length})</h4>
+            ${suspiciousAccounts.map(acc => `<div class="account-item">${acc}</div>`).join('')}
+        </div>
+        <div class="account-file">
+            <h4>💀 DEAD Accounts (${deadAccounts.length})</h4>
+            ${deadAccounts.map(acc => `<div class="account-item">${acc}</div>`).join('')}
+        </div>
+    `;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    initializeAccountSystem();
+    setRandomBackground();
+    showSection('home');
+});
