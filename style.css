@@ -864,3 +864,85 @@ body {
 .close-proof {
     display: none !important; /* Hide skip button */
 }
+/* Sidebar Close Button */
+.close-sidebar {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+}
+
+.sidebar-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 99;
+    display: none;
+}
+
+/* Admin Panel Close Button */
+.close-admin-btn {
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Proof Modal - Force Display */
+.proof-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    z-index: 9999 !important;
+}
+
+.proof-modal[style*="block"] {
+    display: block !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+        left: -100%;
+        transition: left 0.3s ease;
+    }
+    
+    .sidebar.open {
+        left: 0;
+    }
+    
+    .close-sidebar {
+        display: block;
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    .admin-panel {
+        padding: 10px;
+    }
+}
