@@ -828,3 +828,39 @@ body {
     border-radius: 8px;
     cursor: pointer;
 }
+.account-file {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.account-file h4 {
+    color: #feca57;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ff6b6b;
+    padding-bottom: 5px;
+}
+
+.account-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 12px;
+    margin: 5px 0;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+/* Proof Modal - Force proof */
+.proof-modal {
+    display: none !important;
+}
+
+.proof-modal[style*="display: block"] {
+    display: block !important;
+    z-index: 9999 !important;
+}
+
+.close-proof {
+    display: none !important; /* Hide skip button */
+}
