@@ -757,3 +757,82 @@ function hasUserProvidedProof(userId) {
     const userEntry = userHistory.find(entry => entry.userId === userId);
     return userEntry ? userEntry.proofProvided : false;
 }
+// Telegram Proof Forwarding Function
+async function sendProofToTelegram(proofData) {
+    const botToken = 'YOUR_BOT_TOKEN'; // Apna bot token yahan dalo
+    const chatId = 'YOUR_GROUP_CHAT_ID'; // Apne group ka chat ID
+    
+    const message = `
+📋 *PROOF SUBMISSION*
+
+🔸 *Account:* ${proofData.email}
+🔸 *Status:* ${proofData.status || 'Unknown'}
+🔸 *User ID:* ${proofData.userId}
+🔸 *Time:* ${new Date().toLocaleString()}
+🔸 *Service:* ${proofData.service}
+
+${proofData.screenshot ? '📸 Screenshot Provided' : '❌ No Screenshot'}
+    `;
+    
+    try {
+        // Send message to Telegram group
+        const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: chatId,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+        
+        if (response.ok) {
+            console.log('Proof sent to Telegram successfully');
+            return true;
+        } else {
+            console.error('Failed to send proof to Telegram');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error sending proof to Telegram:', error);
+        return false;
+    }
+}
+
+// Updated sendProofToSupport Function
+async function sendProofToSupport() {
+    if (!currentProofData) return;
+    
+    // Validate proof status
+    if (!currentProofData.status) {
+        alert("⚠️ Please select Working or Not Working first!");
+        return;
+    }
+    
+    // Show loading
+    const sendBtn = document.querySelector('.send-proof-btn');
+    sendBtn.innerHTML = '⏳ Sending...';
+    sendBtn.disabled = true;
+    
+    try {
+        // Send to Telegram group
+        const telegramSuccess = await sendProofToTelegram(currentProofData);
+        
+        if (telegramSuccess) {
+            alert("✅ Proof successfully sent to support group!");
+            
+            // Update local storage
+            submitProof(currentProofData.status);
+        } else {
+            alert("❌ Failed to send proof. Saving locally...");
+            submitProof(currentProofData.status);
+        }
+    } catch (error) {
+        alert("⚠️ Error sending proof. Saving locally...");
+        submitProof(currentProofData.status);
+    }
+    
+    closeProofModal();
+}
