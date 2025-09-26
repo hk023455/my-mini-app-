@@ -711,3 +711,49 @@ document.addEventListener('DOMContentLoaded', function() {
     setRandomBackground();
     showSection('home');
 });
+// Updated Account Generation Function
+function generateAccount(service) {
+    if (service !== 'crunchyroll') return;
+    
+    const userId = getCurrentUserId();
+    
+    // Check if user already got account but didn't provide proof
+    if (hasUserReceivedAccount(userId) && !hasUserProvidedProof(userId)) {
+        const firstAccount = getUserFirstAccount(userId);
+        if (firstAccount) {
+            showAccountPopup(firstAccount.email, firstAccount.password);
+            // IMMEDIATELY SHOW PROOF MODAL
+            setTimeout(() => {
+                askForProof({
+                    email: firstAccount.email,
+                    password: firstAccount.password,
+                    userId: userId,
+                    service: service
+                });
+            }, 1000);
+            return;
+        }
+    }
+    
+    // ... rest of account generation code ...
+    
+    // Show account and IMMEDIATELY ask for proof
+    showAccountPopup(email, password);
+    
+    // Show proof modal immediately after account generation
+    setTimeout(() => {
+        askForProof({
+            email: email,
+            password: password,
+            userId: userId,
+            service: service
+        });
+    }, 1000);
+}
+
+// Check if user provided proof
+function hasUserProvidedProof(userId) {
+    const userHistory = getAccounts(ACCOUNT_FILES.USER_HISTORY);
+    const userEntry = userHistory.find(entry => entry.userId === userId);
+    return userEntry ? userEntry.proofProvided : false;
+}
