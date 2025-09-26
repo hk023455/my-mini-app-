@@ -1,31 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-    <title>Mera Quiz Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡️ CodeBeast - Premium Generator</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div id="startScreen">
-            <h1>🎯 Mera Quiz Game</h1>
-            <p>Test your knowledge with these questions!</p>
-            <button onclick="startQuiz()">Start Quiz</button>
-        </div>
+    <!-- 3D Parallax Background -->
+    <div class="parallax-bg">
+        <div class="bg-layer layer-1" data-depth="0.1"></div>
+        <div class="bg-layer layer-2" data-depth="0.3"></div>
+        <div class="bg-layer layer-3" data-depth="0.6"></div>
+    </div>
 
-        <div id="quizScreen" style="display: none;">
-            <h2 id="question">Question will appear here</h2>
-            <div id="options" class="options"></div>
-            <p>Score: <span id="score">0</span></p>
-            <p>Question: <span id="currentQ">1</span>/5</p>
-        </div>
+    <!-- Floating Particles -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
 
-        <div id="resultScreen" style="display: none;">
-            <h1>Quiz Completed! 🎉</h1>
-            <h2>Your Score: <span id="finalScore">0</span>/5</h2>
-            <button onclick="restartQuiz()">Play Again</button>
+    <!-- Main Container -->
+    <div class="container-3d">
+        <!-- Header Section -->
+        <header class="header-3d">
+            <div class="logo-glitch">
+                <span class="glitch-text">⚡️ CODEBEAST GENERATOR</span>
+            </div>
+            <div class="nav-3d">
+                <span class="nav-item">🏠 Home</span>
+                <span class="nav-item">📊 Stats</span>
+                <span class="nav-item">👤 Admin</span>
+            </div>
+        </header>
+
+        <!-- Welcome Section with 3D Card -->
+        <section class="welcome-3d">
+            <div class="card-3d">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <div class="gate-design">
+                            ╔═────────────═╗<br>
+                            <span class="welcome-title">WELCOME TO</span><br>
+                            <span class="bot-title">⚡️ CODEBEAST GENERATOR</span><br>
+                            ╚═────────────═╝
+                        </div>
+                        <div class="gate-subtitle">🔒 The Gate Is Locked...</div>
+                        <div class="gate-instruction">👉 Unlock It By Verifying Below 👇</div>
+                        
+                        <!-- Channel Verification -->
+                        <div class="channel-verify-3d">
+                            <div class="channel-item-3d">
+                                <span class="channel-icon">📺</span>
+                                <span class="channel-name">ʅσɠιƈ.. Channel</span>
+                                <button class="join-btn-3d" onclick="joinChannel()">Join</button>
+                            </div>
+                            <button class="verify-btn-3d" onclick="verifyJoin()">
+                                <span class="btn-text">✅ Verify Join</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Grid (Hidden Initially) -->
+        <section id="services3d" class="services-3d" style="display: none;">
+            <h2 class="section-title-3d">🎯 SELECT YOUR SERVICE</h2>
+            <div class="services-grid-3d">
+                <div class="service-card-3d" onclick="generateAccount('crunchyroll')">
+                    <div class="service-icon-3d">🍥</div>
+                    <h3>CRUNCHYROLL</h3>
+                    <p>Premium Anime Accounts</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+                
+                <div class="service-card-3d" onclick="openHelp()">
+                    <div class="service-icon-3d">❓</div>
+                    <h3>HELP & SUPPORT</h3>
+                    <p>Get Assistance</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+                
+                <div class="service-card-3d" onclick="showHistory()">
+                    <div class="service-icon-3d">🕓</div>
+                    <h3>GENERATION HISTORY</h3>
+                    <p>Your Account Stats</p>
+                    <div class="card-hover-effect"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Account Popup Modal -->
+    <div id="accountPopup" class="popup-modal">
+        <div class="popup-content-3d">
+            <div class="popup-header">
+                ╭─────────────∘◦ ✧ ◦∘─────────────╮<br>
+                <span class="popup-title">🎞️ CRUNCHY SCROLL</span><br>
+                ╰─────────────∘◦ ✧ ◦∘─────────────╯
+            </div>
+            
+            <div class="account-info-3d">
+                <div class="info-item">
+                    <span class="info-label">📧 EMAIL:</span>
+                    <span id="popupEmail" class="info-value">generating...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">🔑 PASSWORD:</span>
+                    <span id="popupPassword" class="info-value">generating...</span>
+                </div>
+            </div>
+
+            <div class="popup-message">
+                🌀 Account ready for anime adventures<br>
+                🔥 Watch anime, rule reality
+            </div>
+
+            <div class="popup-actions">
+                <button class="action-btn success" onclick="markWorking()">
+                    ✅ WORKING
+                </button>
+                <button class="action-btn danger" onclick="markNotWorking()">
+                    ❌ NOT WORKING
+                </button>
+            </div>
+
+            <div class="screenshot-note">
+                📸 Please provide screenshot if account is working
+            </div>
+
+            <button class="close-popup" onclick="closePopup()">✕</button>
         </div>
     </div>
-    
+
+    <!-- Confetti Container -->
+    <div id="confettiContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
