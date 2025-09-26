@@ -272,3 +272,41 @@
     <script src="script.js"></script>
 </body>
 </html>
+<!-- Welcome Section ke andar Captcha ke baad -->
+<div class="channel-join-section">
+    <h3 data-lang="join_channels">📺 Join Our Channels</h3>
+    
+    <div class="channels-list">
+        <div class="channel-item">
+            <div class="channel-info">
+                <span class="channel-icon">⚡</span>
+                <span class="channel-name">Main Updates Channel</span>
+            </div>
+            <button class="channel-join-btn" onclick="joinChannel('main')" data-lang="join">Join</button>
+        </div>
+        
+        <div class="channel-item">
+            <div class="channel-info">
+                <span class="channel-icon">🔧</span>
+                <span class="channel-name">Support & Help</span>
+            </div>
+            <button class="channel-join-btn" onclick="joinChannel('support')" data-lang="join">Join</button>
+        </div>
+        
+        <div class="channel-item">
+            <div class="channel-info">
+                <span class="channel-icon">📢</span>
+                <span class="channel-name">Announcements</span>
+            </div>
+            <button class="channel-join-btn" onclick="joinChannel('announcement')" data-lang="join">Join</button>
+        </div>
+    </div>
+
+    <div class="verification-status">
+        <label class="checkbox-container">
+            <input type="checkbox" id="channelVerifyCheckbox" onchange="toggleVerifyButton()">
+            <span class="checkmark"></span>
+            <span data-lang="verify_join">I have joined all channels</span>
+        </label>
+    </div>
+</div>
