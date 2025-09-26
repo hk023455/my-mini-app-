@@ -310,3 +310,214 @@
         </label>
     </div>
 </div>
+<!-- Admin Panel -->
+<div id="adminPanel" class="admin-panel">
+    <div class="admin-header">
+        <div class="admin-title">
+            <h2>👑 ADMIN DASHBOARD</h2>
+            <span class="admin-subtitle">Premium Generator Pro</span>
+        </div>
+        <div class="admin-actions">
+            <button class="admin-btn refresh-btn" onclick="refreshAdminData()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <button class="admin-btn logout-btn" onclick="logoutAdmin()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+            <button class="admin-btn close-admin" onclick="closeAdminPanel()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="admin-tabs">
+        <button class="admin-tab active" onclick="openAdminTab('dashboard')">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </button>
+        <button class="admin-tab" onclick="openAdminTab('accounts')">
+            <i class="fas fa-key"></i> Accounts Management
+        </button>
+        <button class="admin-tab" onclick="openAdminTab('users')">
+            <i class="fas fa-users"></i> Users Management
+        </button>
+        <button class="admin-tab" onclick="openAdminTab('payments')">
+            <i class="fas fa-rupee-sign"></i> Payments
+        </button>
+        <button class="admin-tab" onclick="openAdminTab('settings')">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+    </div>
+
+    <div class="admin-content">
+        <!-- Dashboard Tab -->
+        <div id="dashboardTab" class="admin-tab-content active">
+            <div class="stats-grid-admin">
+                <div class="stat-card-admin">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Users</h3>
+                        <span id="adminTotalUsers">0</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon"><i class="fas fa-key"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Generations</h3>
+                        <span id="adminTotalGens">0</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                    <div class="stat-info">
+                        <h3>Today's Revenue</h3>
+                        <span id="adminTodayRevenue">₹0</span>
+                    </div>
+                </div>
+                <div class="stat-card-admin">
+                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                    <div class="stat-info">
+                        <h3>Premium Users</h3>
+                        <span id="adminPremiumUsers">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-charts">
+                <div class="chart-container">
+                    <h3>📈 Daily Generations</h3>
+                    <canvas id="generationsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>💰 Revenue Analytics</h3>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Accounts Management Tab -->
+        <div id="accountsTab" class="admin-tab-content">
+            <div class="tab-actions">
+                <button class="action-btn-primary" onclick="showAddAccountsModal()">
+                    <i class="fas fa-plus"></i> Add Accounts
+                </button>
+                <button class="action-btn-secondary" onclick="exportAccounts()">
+                    <i class="fas fa-download"></i> Export
+                </button>
+            </div>
+
+            <div class="accounts-management">
+                <div class="service-accounts">
+                    <h3>🍥 Crunchyroll Accounts</h3>
+                    <div class="accounts-stats">
+                        <span>Total: <strong id="crunchyTotal">0</strong></span>
+                        <span>Active: <strong id="crunchyActive">0</strong></span>
+                        <span>Working: <strong id="crunchyWorking">0</strong></span>
+                    </div>
+                    <div class="accounts-list-admin" id="crunchyAccountsList"></div>
+                </div>
+
+                <div class="service-accounts">
+                    <h3>🛡️ Express VPN Accounts</h3>
+                    <div class="accounts-stats">
+                        <span>Total: <strong id="vpnExpressTotal">0</strong></span>
+                        <span>Active: <strong id="vpnExpressActive">0</strong></span>
+                    </div>
+                    <div class="accounts-list-admin" id="expressVpnAccountsList"></div>
+                </div>
+
+                <div class="service-accounts">
+                    <h3>🔒 Nord VPN Accounts</h3>
+                    <div class="accounts-stats">
+                        <span>Total: <strong id="vpnNordTotal">0</strong></span>
+                        <span>Active: <strong id="vpnNordActive">0</strong></span>
+                    </div>
+                    <div class="accounts-list-admin" id="nordVpnAccountsList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Management Tab -->
+        <div id="usersTab" class="admin-tab-content">
+            <div class="users-filters">
+                <input type="text" id="userSearch" placeholder="Search users..." class="search-input">
+                <select id="userFilter" class="filter-select">
+                    <option value="all">All Users</option>
+                    <option value="premium">Premium Users</option>
+                    <option value="active">Active Today</option>
+                    <option value="banned">Banned Users</option>
+                </select>
+            </div>
+
+            <div class="users-list-admin" id="usersListAdmin"></div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div id="paymentsTab" class="admin-tab-content">
+            <div class="payments-stats">
+                <div class="payment-stat">
+                    <h4>Total Revenue</h4>
+                    <span id="totalRevenue">₹0</span>
+                </div>
+                <div class="payment-stat">
+                    <h4>Pending Verifications</h4>
+                    <span id="pendingPayments">0</span>
+                </div>
+                <div class="payment-stat">
+                    <h4>Successful Today</h4>
+                    <span id="successfulToday">0</span>
+                </div>
+            </div>
+
+            <div class="payments-list" id="paymentsList"></div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div id="settingsTab" class="admin-tab-content">
+            <div class="settings-section">
+                <h3>⚙️ System Settings</h3>
+                <div class="setting-item">
+                    <label>Daily Generation Limit:</label>
+                    <input type="number" id="dailyLimit" value="3" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Enable CAPTCHA:</label>
+                    <input type="checkbox" id="enableCaptcha" checked class="setting-checkbox">
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3>🔗 Channel Links</h3>
+                <div class="setting-item">
+                    <label>Main Channel:</label>
+                    <input type="text" id="mainChannelLink" class="setting-input">
+                </div>
+                <div class="setting-item">
+                    <label>Support Channel:</label>
+                    <input type="text" id="supportChannelLink" class="setting-input">
+                </div>
+            </div>
+
+            <button class="save-settings-btn" onclick="saveAdminSettings()">
+                <i class="fas fa-save"></i> Save Settings
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Accounts Modal -->
+<div id="addAccountsModal" class="admin-modal">
+    <div class="modal-content">
+        <h3>Add Accounts</h3>
+        <select id="accountService" class="modal-select">
+            <option value="crunchyroll">Crunchyroll</option>
+            <option value="expressvpn">Express VPN</option>
+            <option value="nordvpn">Nord VPN</option>
+        </select>
+        <textarea id="accountsTextarea" placeholder="Enter accounts in format: email:password&#10;One account per line" 
+                  class="modal-textarea"></textarea>
+        <div class="modal-actions">
+            <button class="modal-btn primary" onclick="addBulkAccounts()">Add Accounts</button>
+            <button class="modal-btn secondary" onclick="closeAddAccountsModal()">Cancel</button>
+        </div>
+    </div>
+</div>
