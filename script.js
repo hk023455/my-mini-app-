@@ -28,7 +28,7 @@ let userHistory = JSON.parse(localStorage.getItem('userHistory')) || [];
 
 // Channel Verification
 function joinChannel() {
-    window.open('https://t.me/your_channel_link', '_blank');
+    window.open('https://t.me/+vNA6mxXv25M1MmI1', '_blank');
 }
 
 function verifyJoin() {
@@ -142,7 +142,7 @@ function showHistory() {
 
 // Help Function
 function openHelp() {
-    window.open('https://t.me/your_help_channel', '_blank');
+    window.open('https://t.me/+dbBLVmVAvfU5NGU1', '_blank');
 }
 
 // Scroll 3D Effect
