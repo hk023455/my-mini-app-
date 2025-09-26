@@ -284,3 +284,141 @@ if (!localStorage.getItem('userHistory')) {
 if (!localStorage.getItem('crunchyrollAccounts')) {
     localStorage.setItem('crunchyrollAccounts', JSON.stringify([]));
 }
+// 5 Anime Backgrounds
+const ANIME_BACKGROUNDS = [
+    "https://e1.pxfuel.com/desktop-wallpaper/520/452/desktop-wallpaper-7-3d-anime-cool-anime-3d.jpg",
+    "https://wallpapercave.com/wp/wp11752715.jpg",
+    "https://wallpaperaccess.com/full/5651980.jpg",
+    "https://images.hdqwalls.com/download/anime-city-scape-neon-4k-5k-5c-1920x1080.jpg",
+    "https://images3.alphacoders.com/133/1334330.png"
+];
+
+// Current background index
+let currentBgIndex = 0;
+
+// Change Background Function
+function changeBackground(index) {
+    currentBgIndex = index - 1;
+    const bgUrl = ANIME_BACKGROUNDS[currentBgIndex];
+    
+    // Update all background layers
+    document.querySelectorAll('.bg-layer').forEach(layer => {
+        layer.style.backgroundImage = `url('${bgUrl}')`;
+    });
+    
+    // Save to localStorage
+    localStorage.setItem('selectedBackground', index);
+}
+
+// Random background on page load
+function setRandomBackground() {
+    const savedBg = localStorage.getItem('selectedBackground');
+    if (savedBg) {
+        changeBackground(parseInt(savedBg));
+    } else {
+        const randomIndex = Math.floor(Math.random() * ANIME_BACKGROUNDS.length) + 1;
+        changeBackground(randomIndex);
+    }
+}
+
+// Section Navigation
+function showSection(sectionName) {
+    // Hide all sections
+    document.querySelectorAll('.section').forEach(section => {
+        section.style.display = 'none';
+    });
+    
+    // Show selected section
+    document.getElementById(sectionName + 'Section').style.display = 'block';
+    
+    // Update active menu
+    document.querySelectorAll('.menu-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+
+// Proof System
+let currentProofData = null;
+
+function askForProof(accountData) {
+    currentProofData = accountData;
+    document.getElementById('proofModal').style.display = 'block';
+}
+
+function submitProof(status) {
+    currentProofData.status = status;
+    alert(`Proof recorded as: ${status.toUpperCase()}`);
+}
+
+function sendProofToSupport() {
+    if (!currentProofData) return;
+    
+    const proofInfo = `
+📋 PROOF SUBMISSION
+├─ Account: ${currentProofData.email}
+├─ Status: ${currentProofData.status || 'Unknown'}
+├─ User ID: ${currentProofData.userId}
+└─ Time: ${new Date().toLocaleString()}
+    `;
+    
+    // Here you can send to your support group
+    // For now, we'll just show an alert
+    alert(`Proof sent to support group!\n\n${proofInfo}`);
+    
+    // Save proof to history
+    saveProofToHistory(currentProofData);
+    closeProofModal();
+}
+
+function saveProofToHistory(proofData) {
+    const proofs = JSON.parse(localStorage.getItem('proofHistory')) || [];
+    proofs.push({
+        ...proofData,
+        timestamp: new Date().toISOString()
+    });
+    localStorage.setItem('proofHistory', JSON.stringify(proofs));
+}
+
+function closeProofModal() {
+    document.getElementById('proofModal').style.display = 'none';
+    currentProofData = null;
+}
+
+// Update account generation function to ask for proof
+function generateAccount(service) {
+    if (service === 'crunchyroll') {
+        const availableAccounts = crunchyrollAccounts.filter(acc => 
+            !usedAccounts.has(acc.email)
+        );
+        
+        if (availableAccounts.length === 0) {
+            alert('❌ No accounts available!');
+            return;
+        }
+        
+        const randomAccount = availableAccounts[Math.floor(Math.random() * availableAccounts.length)];
+        usedAccounts.add(randomAccount.email);
+        
+        // Show account in popup
+        showAccountPopup(randomAccount.email, randomAccount.password);
+        
+        // Ask for proof after 3 seconds
+        setTimeout(() => {
+            askForProof({
+                email: randomAccount.email,
+                password: randomAccount.password,
+                userId: 'current_user', // You can get actual user ID
+                service: service
+            });
+        }, 3000);
+    }
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setRandomBackground();
+    
+    // Set first section as active
+    showSection('home');
+});
