@@ -39,7 +39,7 @@ const CONFIG = {
     },
     
     // Telegram Alert Channel
-    ALERT_CHANNEL: -1002564024778,
+    ALERT_CHANNEL: -1003176361256,
     
     // Web Interface Settings
     UI: {
