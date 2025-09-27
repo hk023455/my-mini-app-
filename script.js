@@ -1,708 +1,540 @@
-// ⚡️ PREMIUM GENERATOR PRO - MAIN SCRIPT
-class PremiumGenerator {
+// ===== MAIN APPLICATION =====
+class CrunchyRollApp {
     constructor() {
-        this.currentUser = null;
-        this.currentProof = null;
-        this.isAdmin = false;
-        this.parallaxInstance = null;
         this.init();
     }
 
-    init() {
-        this.initializeUser();
-        this.setupEventListeners();
-        this.initialize3DEffects();
-        this.loadUserData();
-        this.setupServiceWorker();
-        this.checkPremiumStatus();
-        console.log('⚡️ Premium Generator Pro Initialized');
+    async init() {
+        // Initialize all components
+        await this.loadConfig();
+        this.init3DBackground();
+        this.initCustomCursor();
+        this.initSoundSystem();
+        this.initLanguageSystem();
+        this.initEventListeners();
+        this.loadStats();
+        this.hideLoadingScreen();
+        
+        // Start background services
+        this.startBackgroundServices();
     }
 
-    initializeUser() {
-        let userId = localStorage.getItem('userId');
-        if (!userId) {
-            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('userId', userId);
+    // ===== 3D BACKGROUND SYSTEM =====
+    init3DBackground() {
+        const canvas = document.getElementById('particle-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        
+        // Create floating particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 1000;
+        
+        const posArray = new Float32Array(particlesCount * 3);
+        const colorArray = new Float32Array(particlesCount * 3);
+        
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 10;
+            colorArray[i] = Math.random();
         }
         
-        this.currentUser = {
-            id: userId,
-            generations: parseInt(localStorage.getItem('userGenerations')) || 0,
-            referrals: parseInt(localStorage.getItem('userReferrals')) || 0,
-            points: parseInt(localStorage.getItem('userPoints')) || 0,
-            joined: localStorage.getItem('userJoinDate') || new Date().toISOString()
-        };
-
-        this.saveUserData();
-    }
-
-    setupEventListeners() {
-        // CAPTCHA Verification
-        document.getElementById('captchaInput')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.verifyCaptcha();
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+        
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.02,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.6
         });
-
-        // Proof Image Upload
-        document.getElementById('proofImage')?.addEventListener('change', (e) => {
-            this.handleProofImage(e.target.files[0]);
-        });
-
-        // Modal Closes
-        document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('popup-modal') || 
-                e.target.classList.contains('proof-modal') ||
-                e.target.classList.contains('premium-modal')) {
-                this.closeAllModals();
-            }
-        });
-
-        // Keyboard Shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.closeAllModals();
-            if (e.key === 'F1') e.preventDefault() && this.showHelp();
-        });
-    }
-
-    initialize3DEffects() {
-        // Parallax Background
-        const scene = document.querySelector('.parallax-bg');
-        if (scene) {
-            this.parallaxInstance = new Parallax(scene, {
-                relativeInput: true,
-                hoverOnly: true
-            });
-        }
-
-        // Mouse Move 3D Effect
-        document.addEventListener('mousemove', (e) => {
-            this.handleMouseMove(e);
-        });
-
-        // Scroll Parallax
-        window.addEventListener('scroll', () => {
-            this.handleScrollParallax();
-        });
-    }
-
-    handleMouseMove(e) {
-        const x = (e.clientX / window.innerWidth) * 100;
-        const y = (e.clientY / window.innerHeight) * 100;
-
-        document.querySelectorAll('.service-card-3d').forEach(card => {
-            const depth = 20;
-            const rotateX = (y - 50) * 0.1;
-            const rotateY = (x - 50) * 0.1;
+        
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+        
+        camera.position.z = 2;
+        
+        // Animation loop
+        const animate = () => {
+            requestAnimationFrame(animate);
             
-            card.style.transform = `
-                translateZ(${depth}px)
-                rotateX(${rotateX}deg)
-                rotateY(${rotateY}deg)
-            `;
+            particlesMesh.rotation.x += 0.001;
+            particlesMesh.rotation.y += 0.002;
+            
+            const positions = particlesMesh.geometry.attributes.position.array;
+            for(let i = 0; i < positions.length; i += 3) {
+                positions[i + 1] += Math.sin(Date.now() * 0.001 + i) * 0.0005;
+            }
+            particlesMesh.geometry.attributes.position.needsUpdate = true;
+            
+            renderer.render(scene, camera);
+        };
+        
+        animate();
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         });
     }
 
-    handleScrollParallax() {
-        const scrolled = window.pageYOffset;
-        const rate = scrolled * -0.5;
-
-        document.querySelectorAll('.bg-layer').forEach((layer, index) => {
-            const speed = (index + 1) * 0.1;
-            layer.style.transform = `translateY(${rate * speed}px)`;
+    // ===== CUSTOM CURSOR SYSTEM =====
+    initCustomCursor() {
+        const cursor = document.querySelector('.custom-cursor');
+        const trail = document.querySelector('.cursor-trail');
+        
+        document.addEventListener('mousemove', (e) => {
+            // Main cursor
+            gsap.to(cursor, {
+                x: e.clientX - 10,
+                y: e.clientY - 10,
+                duration: 0.1,
+                ease: "power2.out"
+            });
+            
+            // Trail with delay
+            gsap.to(trail, {
+                x: e.clientX - 4,
+                y: e.clientY - 4,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+            
+            // Hover effects
+            const target = e.target;
+            if (target.classList.contains('generate-btn') || 
+                target.classList.contains('action-btn') ||
+                target.tagName === 'BUTTON') {
+                gsap.to(cursor, { scale: 1.5, duration: 0.2 });
+                cursor.style.background = 'rgba(255, 0, 255, 0.3)';
+            } else {
+                gsap.to(cursor, { scale: 1, duration: 0.2 });
+                cursor.style.background = 'transparent';
+            }
+        });
+        
+        // Click effect
+        document.addEventListener('click', () => {
+            gsap.to(cursor, { scale: 0.8, duration: 0.1, yoyo: true, repeat: 1 });
+            this.playSound('click');
         });
     }
 
-    // CAPTCHA System
-    generateCaptcha() {
-        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-        let captcha = '';
-        for (let i = 0; i < 6; i++) {
-            captcha += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+    // ===== SOUND SYSTEM =====
+    initSoundSystem() {
+        this.sounds = {
+            click: new Howl({ src: ['assets/sounds/click.mp3'], volume: 0.3 }),
+            success: new Howl({ src: ['assets/sounds/success.mp3'], volume: 0.5 }),
+            notification: new Howl({ src: ['assets/sounds/notification.mp3'], volume: 0.4 }),
+            generate: new Howl({ src: ['assets/sounds/generate.mp3'], volume: 0.6 })
+        };
         
-        const captchaElement = document.getElementById('captchaText');
-        if (captchaElement) {
-            captchaElement.textContent = captcha;
-            captchaElement.style.color = this.getRandomColor();
-        }
+        this.soundEnabled = true;
         
-        return captcha;
-    }
-
-    getRandomColor() {
-        const colors = ['#ff6b6b', '#48dbfb', '#feca57', '#1dd1a1', '#ff9ff3'];
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    verifyCaptcha() {
-        const input = document.getElementById('captchaInput');
-        const captcha = document.getElementById('captchaText');
+        // Sound toggle
+        document.getElementById('sound-toggle').addEventListener('click', () => {
+            this.soundEnabled = !this.soundEnabled;
+            const btn = document.getElementById('sound-toggle');
+            btn.textContent = this.soundEnabled ? '🔊' : '🔇';
+            this.showNotification(this.soundEnabled ? 'Sound Enabled' : 'Sound Disabled');
+        });
         
-        if (!input || !captcha) return;
-
-        if (input.value.toUpperCase() === captcha.textContent) {
-            this.showServices();
-            this.showNotification('CAPTCHA Verified!', 'success');
-        } else {
-            this.showNotification('Invalid CAPTCHA! Try again.', 'error');
-            this.generateCaptcha();
-            input.value = '';
-            input.focus();
-        }
-    }
-
-    refreshCaptcha() {
-        this.generateCaptcha();
-        document.getElementById('captchaInput').value = '';
-    }
-
-    // Services Management
-    showServices() {
-        document.querySelector('.welcome-section').style.display = 'none';
-        document.getElementById('servicesSection').style.display = 'block';
-        
-        // Add entrance animation
-        gsap.from('.service-card-3d', {
-            duration: 0.8,
-            y: 100,
-            opacity: 0,
-            stagger: 0.1,
-            ease: "back.out(1.7)"
+        // Volume control
+        const volumeSlider = document.getElementById('volume-slider');
+        volumeSlider.addEventListener('input', (e) => {
+            Howler.volume(e.target.value);
         });
     }
 
-    selectService(service) {
-        if (this.isRateLimited()) {
-            this.showNotification('Rate limit exceeded! Try again later.', 'error');
-            return;
+    playSound(soundName) {
+        if (this.soundEnabled && this.sounds[soundName]) {
+            this.sounds[soundName].play();
         }
-
-        // Check premium requirements for some services
-        if (this.requiresPremium(service) && !this.isPremiumUser()) {
-            this.showPremiumPlans();
-            return;
-        }
-
-        this.generateAccount(service);
     }
 
-    requiresPremium(service) {
-        const premiumServices = ['netflix', 'disney', 'hbo'];
-        return premiumServices.includes(service);
+    // ===== LANGUAGE SYSTEM =====
+    initLanguageSystem() {
+        const languageSelect = document.getElementById('language-select');
+        const savedLanguage = localStorage.getItem('preferred-language') || 'en';
+        
+        languageSelect.value = savedLanguage;
+        this.setLanguage(savedLanguage);
+        
+        languageSelect.addEventListener('change', (e) => {
+            this.setLanguage(e.target.value);
+            localStorage.setItem('preferred-language', e.target.value);
+        });
     }
 
-    isPremiumUser() {
-        const status = paymentSystem.userStatus;
-        return status.isPremium && status.expiry > Date.now();
+    setLanguage(lang) {
+        // This would integrate with your languages.js
+        document.documentElement.lang = lang;
+        this.updateTextContent(lang);
     }
 
-    // Account Generation System
-    async generateAccount(service) {
+    updateTextContent(lang) {
+        // Simple translation implementation - extend with languages.js
+        const translations = {
+            en: {
+                'subtitle': 'Advanced 3D Account Management System',
+                'generate-now': 'GENERATE NOW',
+                'admin-panel': 'Admin Panel'
+            },
+            hi: {
+                'subtitle': 'उन्नत 3D अकाउंट प्रबंधन प्रणाली',
+                'generate-now': 'अभी जनरेट करें',
+                'admin-panel': 'एडमिन पैनल'
+            },
+            es: {
+                'subtitle': 'Sistema avanzado de gestión de cuentas 3D',
+                'generate-now': 'GENERAR AHORA',
+                'admin-panel': 'Panel de administración'
+            }
+        };
+        
+        const elements = document.querySelectorAll('[data-i18n]');
+        elements.forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            if (translations[lang] && translations[lang][key]) {
+                element.textContent = translations[lang][key];
+            }
+        });
+    }
+
+    // ===== EVENT LISTENERS =====
+    initEventListeners() {
+        // Generate account button
+        document.getElementById('generate-account').addEventListener('click', () => {
+            this.generateAccount();
+        });
+        
+        // Verify channels button
+        document.getElementById('verify-channels').addEventListener('click', () => {
+            this.verifyChannels();
+        });
+        
+        // Admin panel button
+        document.getElementById('open-admin').addEventListener('click', () => {
+            this.openAdminPanel();
+        });
+        
+        // Copy buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('copy-btn')) {
+                this.copyToClipboard(e.target);
+            }
+        });
+    }
+
+    // ===== ACCOUNT GENERATION =====
+    async generateAccount() {
+        const generateBtn = document.getElementById('generate-account');
+        const btnText = generateBtn.querySelector('.btn-text');
+        const btnLoading = generateBtn.querySelector('.btn-loading');
+        
+        // Show loading state
+        btnText.style.display = 'none';
+        btnLoading.style.display = 'block';
+        generateBtn.disabled = true;
+        
+        this.playSound('generate');
+        
         try {
-            this.showLoader('Generating account...');
-
-            let account;
-            switch(service) {
-                case 'crunchyroll':
-                    account = this.getCrunchyrollAccount();
-                    break;
-                case 'expressvpn':
-                    account = vpnServices.getAccount('expressvpn');
-                    break;
-                case 'nordvpn':
-                    account = vpnServices.getAccount('nordvpn');
-                    break;
-                default:
-                    throw new Error('Service not available');
-            }
-
-            if (!account) {
-                throw new Error('No accounts available for this service');
-            }
-
-            await this.simulateGenerationDelay();
-            this.showAccountPopup(account);
-            this.trackGeneration(service);
-
-            // Auto-show proof modal after 3 seconds
-            setTimeout(() => {
-                this.askForProof(account);
-            }, 3000);
-
+            // Simulate API call - replace with actual backend
+            const account = await this.fetchAccount();
+            
+            // Show result
+            this.showAccountResult(account);
+            this.playSound('success');
+            this.showConfetti();
+            
+            // Update stats
+            this.updateStats();
+            
         } catch (error) {
-            this.showNotification(error.message, 'error');
+            this.showNotification('Error generating account. Please try again.', 'error');
         } finally {
-            this.hideLoader();
+            // Reset button
+            btnText.style.display = 'block';
+            btnLoading.style.display = 'none';
+            generateBtn.disabled = false;
+            
+            // Set cooldown
+            this.startCooldown(60); // 60 seconds cooldown
         }
     }
 
-    getCrunchyrollAccount() {
-        const accounts = [
-            "premium.anime@crunchy.com:AnimeLove123",
-            "watch.japan@premium.com:OtakuKing456",
-            "anime.stream@account.com:Naruto789",
-            "manga.fan@premium.com:OnePiece012",
-            "japan.animation@vip.com:DragonBall345"
-        ];
-
-        const usedAccounts = JSON.parse(localStorage.getItem('usedAccounts')) || [];
-        const availableAccounts = accounts.filter(acc => !usedAccounts.includes(acc));
-
-        if (availableAccounts.length === 0) {
-            return null;
-        }
-
-        const randomAccount = availableAccounts[Math.floor(Math.random() * availableAccounts.length)];
-        usedAccounts.push(randomAccount);
-        localStorage.setItem('usedAccounts', JSON.stringify(usedAccounts));
-
-        const [email, password] = randomAccount.split(':');
-        return { email, password, service: 'crunchyroll' };
+    async fetchAccount() {
+        // Replace with actual API call to Netlify function
+        const response = await fetch('/.netlify/functions/accounts');
+        if (!response.ok) throw new Error('Failed to fetch account');
+        return await response.json();
     }
 
-    simulateGenerationDelay() {
-        return new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 2000));
-    }
-
-    // Proof System
-    askForProof(account) {
-        this.currentProof = {
-            ...account,
-            userId: this.currentUser.id,
-            timestamp: new Date().toISOString()
-        };
-
-        this.showProofModal();
-    }
-
-    showProofModal() {
-        const modal = document.getElementById('proofModal');
-        modal.style.display = 'block';
+    showAccountResult(account) {
+        const resultDiv = document.getElementById('account-result');
+        const emailElem = document.getElementById('account-email');
+        const passwordElem = document.getElementById('account-password');
+        const statusElem = document.getElementById('account-status');
         
-        // Force user to provide proof
-        modal.style.pointerEvents = 'auto';
-        document.body.style.overflow = 'hidden';
+        emailElem.textContent = account.email;
+        passwordElem.textContent = account.password;
+        statusElem.textContent = 'Working';
+        statusElem.className = 'status-working';
+        
+        resultDiv.style.display = 'block';
+        
+        // Animate appearance
+        gsap.fromTo(resultDiv, 
+            { opacity: 0, y: 50 }, 
+            { opacity: 1, y: 0, duration: 0.5 }
+        );
     }
 
-    submitProof(status) {
-        if (!this.currentProof) return;
-
-        this.currentProof.status = status;
-        this.currentProof.proofTime = new Date().toISOString();
-
-        // Save proof to history
-        this.saveProofToHistory();
-
-        this.showNotification(`Proof submitted as ${status.toUpperCase()}`, 'success');
-        this.closeProofModal();
-
-        // Auto-send to support if working
-        if (status === 'working') {
-            this.sendProofToSupport();
-        }
+    // ===== COOLDOWN SYSTEM =====
+    startCooldown(seconds) {
+        const cooldownElem = document.getElementById('cooldown-time');
+        const generateBtn = document.getElementById('generate-account');
+        
+        generateBtn.disabled = true;
+        
+        let timeLeft = seconds;
+        const countdown = setInterval(() => {
+            const minutes = Math.floor(timeLeft / 60);
+            const secs = timeLeft % 60;
+            cooldownElem.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                generateBtn.disabled = false;
+                cooldownElem.textContent = 'Ready!';
+            }
+            
+            timeLeft--;
+        }, 1000);
     }
 
-    async sendProofToSupport() {
-        if (!this.currentProof) return;
-
+    // ===== CHANNEL VERIFICATION =====
+    async verifyChannels() {
+        const verifyBtn = document.getElementById('verify-channels');
+        verifyBtn.disabled = true;
+        verifyBtn.textContent = 'Verifying...';
+        
         try {
-            // Simulate sending to Telegram
-            await this.sendToTelegram();
-            this.showNotification('Proof sent to support!', 'success');
+            // Simulate channel verification
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            this.showNotification('Channels verified successfully!', 'success');
+            verifyBtn.textContent = 'Verified ✓';
+            verifyBtn.style.background = 'linear-gradient(135deg, #00ff00, #00cc00)';
+            
         } catch (error) {
-            this.showNotification('Failed to send proof', 'error');
+            this.showNotification('Verification failed. Please try again.', 'error');
+            verifyBtn.textContent = 'Verify Now';
+            verifyBtn.disabled = false;
         }
     }
 
-    async sendToTelegram() {
-        // Simulate API call to Telegram bot
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log('Proof sent to Telegram:', this.currentProof);
-                resolve(true);
-            }, 1000);
-        });
+    // ===== STATISTICS SYSTEM =====
+    async loadStats() {
+        try {
+            // Simulate API call
+            const stats = {
+                totalAccounts: 1250,
+                workingAccounts: 843,
+                totalUsers: 892,
+                todayGenerations: 47
+            };
+            
+            this.updateDisplayStats(stats);
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
     }
 
-    handleProofImage(file) {
-        if (!file) return;
+    updateDisplayStats(stats) {
+        document.getElementById('total-accounts').textContent = stats.totalAccounts.toLocaleString();
+        document.getElementById('working-accounts').textContent = stats.workingAccounts.toLocaleString();
+        document.getElementById('total-users').textContent = stats.totalUsers.toLocaleString();
+        document.getElementById('today-generations').textContent = stats.todayGenerations.toLocaleString();
+        
+        // Animate number counting
+        this.animateValue('total-accounts', 0, stats.totalAccounts, 2000);
+        this.animateValue('working-accounts', 0, stats.workingAccounts, 2000);
+    }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const preview = document.getElementById('proofPreview');
-            preview.innerHTML = `<img src="${e.target.result}" style="max-width: 200px; border-radius: 10px;">`;
+    animateValue(id, start, end, duration) {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const value = Math.floor(progress * (end - start) + start);
+            obj.textContent = value.toLocaleString();
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
         };
-        reader.readAsDataURL(file);
+        
+        window.requestAnimationFrame(step);
     }
 
-    // Modal Management
-    closeAllModals() {
-        document.querySelectorAll('.popup-modal, .proof-modal, .premium-modal').forEach(modal => {
-            modal.style.display = 'none';
-        });
-        document.body.style.overflow = 'auto';
+    updateStats() {
+        // Update stats after account generation
+        const todayElem = document.getElementById('today-generations');
+        todayElem.textContent = (parseInt(todayElem.textContent) + 1).toString();
     }
 
-    closeProofModal() {
-        document.getElementById('proofModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-        this.currentProof = null;
+    // ===== ADMIN PANEL =====
+    openAdminPanel() {
+        this.showNotification('Admin panel opening...', 'info');
+        // Redirect to admin.html or show modal
+        window.location.href = 'admin.html';
     }
 
-    // UI Helpers
-    showLoader(message) {
-        // Implement loading overlay
-        const loader = document.createElement('div');
-        loader.className = 'loading-overlay';
-        loader.innerHTML = `
-            <div class="spinner"></div>
-            <p>${message}</p>
-        `;
-        document.body.appendChild(loader);
-    }
-
-    hideLoader() {
-        const loader = document.querySelector('.loading-overlay');
-        if (loader) loader.remove();
-    }
-
+    // ===== NOTIFICATION SYSTEM =====
     showNotification(message, type = 'info') {
+        const notificationCenter = document.getElementById('notification-center');
         const notification = document.createElement('div');
-        notification.className = `notification ${type}`;
+        notification.className = `notification notification-${type}`;
         notification.innerHTML = `
-            <span>${message}</span>
-            <button onclick="this.parentElement.remove()">×</button>
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close">×</button>
+            </div>
         `;
-
-        document.body.appendChild(notification);
-
+        
+        notificationCenter.appendChild(notification);
+        
+        // Auto remove after 5 seconds
         setTimeout(() => {
-            if (notification.parentElement) {
+            if (notification.parentNode) {
                 notification.remove();
             }
         }, 5000);
-    }
-
-    // Data Management
-    saveUserData() {
-        localStorage.setItem('userGenerations', this.currentUser.generations);
-        localStorage.setItem('userReferrals', this.currentUser.referrals);
-        localStorage.setItem('userPoints', this.currentUser.points);
-        localStorage.setItem('userJoinDate', this.currentUser.joined);
-    }
-
-    loadUserData() {
-        document.getElementById('userGenerations').textContent = this.currentUser.generations;
-        document.getElementById('userReferrals').textContent = this.currentUser.referrals;
-        document.getElementById('userPoints').textContent = this.currentUser.points;
-    }
-
-    trackGeneration(service) {
-        this.currentUser.generations++;
-        this.currentUser.points += 10;
-        this.saveUserData();
-        this.loadUserData();
-
-        // Save generation history
-        const history = JSON.parse(localStorage.getItem('generationHistory')) || [];
-        history.push({
-            service,
-            timestamp: new Date().toISOString(),
-            userId: this.currentUser.id
+        
+        // Close button
+        notification.querySelector('.notification-close').addEventListener('click', () => {
+            notification.remove();
         });
-        localStorage.setItem('generationHistory', JSON.stringify(history));
+        
+        this.playSound('notification');
     }
 
-    saveProofToHistory() {
-        const proofs = JSON.parse(localStorage.getItem('proofHistory')) || [];
-        proofs.push(this.currentProof);
-        localStorage.setItem('proofHistory', JSON.stringify(proofs));
-    }
-
-    isRateLimited() {
-        const lastGeneration = localStorage.getItem('lastGeneration');
-        if (!lastGeneration) return false;
-
-        const timeDiff = Date.now() - parseInt(lastGeneration);
-        return timeDiff < 60000; // 1 minute rate limit
-    }
-
-    setupServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => console.log('SW registered'))
-                .catch(error => console.log('SW registration failed'));
+    // ===== CONFETTI EFFECT =====
+    showConfetti() {
+        const confettiContainer = document.getElementById('confetti-container');
+        confettiContainer.innerHTML = '';
+        
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDelay = Math.random() * 2 + 's';
+            confetti.style.background = this.getRandomColor();
+            confettiContainer.appendChild(confetti);
         }
-    }
-
-    checkPremiumStatus() {
-        if (this.isPremiumUser()) {
-            document.querySelector('.premium-btn').classList.add('premium-active');
-        }
-    }
-}
-
-// Global Functions for HTML onclick events
-function verifyCaptcha() {
-    premiumGenerator.verifyCaptcha();
-}
-
-function refreshCaptcha() {
-    premiumGenerator.refreshCaptcha();
-}
-
-function selectService(service) {
-    premiumGenerator.selectService(service);
-}
-
-function markWorking() {
-    premiumGenerator.submitProof('working');
-}
-
-function markNotWorking() {
-    premiumGenerator.submitProof('not_working');
-}
-
-function closePopup() {
-    premiumGenerator.closeAllModals();
-}
-
-function showPremiumPlans() {
-    document.getElementById('premiumModal').style.display = 'block';
-}
-
-function uploadProofImage() {
-    document.getElementById('proofImage').click();
-}
-
-function sendProofToSupport() {
-    premiumGenerator.sendProofToSupport();
-}
-
-function toggleTheme() {
-    document.body.classList.toggle('light-theme');
-    document.body.classList.toggle('dark-theme');
-    
-    const themeBtn = document.getElementById('themeBtn');
-    const isDark = document.body.classList.contains('dark-theme');
-    
-    themeBtn.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-// Initialize theme from localStorage
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    document.body.classList.add(savedTheme + '-theme');
-    
-    const themeBtn = document.getElementById('themeBtn');
-    themeBtn.innerHTML = savedTheme === 'dark' ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
-}
-
-// Show Account Popup
-function showAccountPopup(account) {
-    document.getElementById('popupServiceTitle').textContent = 
-        account.service === 'crunchyroll' ? '🎞️ CRUNCHY SCROLL' : 
-        account.service === 'expressvpn' ? '🛡️ EXPRESS VPN' : '🔒 NORD VPN';
-    
-    document.getElementById('popupEmail').textContent = account.email;
-    document.getElementById('popupPassword').textContent = account.password;
-    document.getElementById('accountPopup').style.display = 'block';
-}
-
-// Admin Functions
-function showAdminLogin() {
-    const password = prompt('Enter admin password:');
-    if (password === 'kartik@6201') {
-        premiumGenerator.isAdmin = true;
-        showAdminPanel();
-    } else {
-        alert('Invalid password!');
-    }
-}
-
-function showAdminPanel() {
-    // Implement admin panel UI
-    alert('Admin panel will be implemented in next version');
-}
-
-// Initialize everything when DOM loads
-document.addEventListener('DOMContentLoaded', function() {
-    initializeTheme();
-    premiumGenerator = new PremiumGenerator();
-    premiumGenerator.generateCaptcha();
-    
-    // Add CSS for notifications
-    const style = document.createElement('style');
-    style.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 10px;
-            color: white;
-            z-index: 10000;
-            animation: slideIn 0.3s ease;
-        }
-        .notification.success { background: #1dd1a1; }
-        .notification.error { background: #ff6b6b; }
-        .notification button { background: none; border: none; color: white; margin-left: 10px; }
-        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } }
         
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            color: white;
-        }
-        .spinner {
-            border: 4px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top: 4px solid #ff6b6b;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    `;
-    document.head.appendChild(style);
-});
-
-// Global variable
-let premiumGenerator;
-// Admin Password Configuration
-const ADMIN_CONFIG = {
-    MASTER_PASSWORD: "kartik@6201",
-    SECRET_CODE: "admin123", // For URL access
-    SESSION_TIMEOUT: 30 * 60 * 1000 // 30 minutes
-};
-
-// Show Admin Login
-function showAdminLogin() {
-    document.getElementById('adminLoginModal').style.display = 'block';
-    document.getElementById('adminPassword').focus();
-}
-
-// Check Admin Password
-function checkAdminPassword() {
-    const password = document.getElementById('adminPassword').value;
-    const errorElement = document.getElementById('adminLoginError');
-    
-    if (password === ADMIN_CONFIG.MASTER_PASSWORD) {
-        // Successful login
-        document.getElementById('adminLoginModal').style.display = 'none';
-        document.getElementById('advancedAdminPanel').style.display = 'block';
-        
-        // Log access
-        logAdminAccess('SUCCESS');
-        
-        // Start session timer
-        startAdminSession();
-        
-        // Load admin data
-        loadAdminDashboard();
-        
-    } else {
-        errorElement.textContent = "❌ Access Denied! Invalid password.";
-        logAdminAccess('FAILED');
-        
-        // Security delay
         setTimeout(() => {
-            errorElement.textContent = "";
+            confettiContainer.innerHTML = '';
         }, 3000);
     }
-}
 
-// Admin Session Management
-let adminSessionTimer;
-function startAdminSession() {
-    // Clear existing timer
-    if (adminSessionTimer) clearTimeout(adminSessionTimer);
-    
-    // Set new timer
-    adminSessionTimer = setTimeout(() => {
-        logoutAdmin();
-        alert("Admin session expired due to inactivity.");
-    }, ADMIN_CONFIG.SESSION_TIMEOUT);
-}
-
-function logoutAdmin() {
-    document.getElementById('advancedAdminPanel').style.display = 'none';
-    document.getElementById('adminPassword').value = "";
-    
-    if (adminSessionTimer) {
-        clearTimeout(adminSessionTimer);
+    getRandomColor() {
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+        return colors[Math.floor(Math.random() * colors.length)];
     }
-    
-    logAdminAccess('LOGOUT');
-}
 
-// Log Admin Access
-function logAdminAccess(action) {
-    const log = {
-        timestamp: new Date().toISOString(),
-        action: action,
-        ip: 'user_ip', // You can get actual IP
-        userAgent: navigator.userAgent
-    };
-    
-    const logs = JSON.parse(localStorage.getItem('adminAccessLogs') || '[]');
-    logs.push(log);
-    localStorage.setItem('adminAccessLogs', JSON.stringify(logs));
-}
+    // ===== UTILITY FUNCTIONS =====
+    async copyToClipboard(button) {
+        const copyType = button.getAttribute('data-copy');
+        let textToCopy = '';
+        
+        if (copyType === 'email') {
+            textToCopy = document.getElementById('account-email').textContent;
+        } else if (copyType === 'password') {
+            textToCopy = document.getElementById('account-password').textContent;
+        } else {
+            const email = document.getElementById('account-email').textContent;
+            const password = document.getElementById('account-password').textContent;
+            textToCopy = `Email: ${email}\nPassword: ${password}`;
+        }
+        
+        try {
+            await navigator.clipboard.writeText(textToCopy);
+            this.showNotification('Copied to clipboard!', 'success');
+        } catch (err) {
+            this.showNotification('Failed to copy', 'error');
+        }
+    }
 
-// Advanced Admin Functions
-function loadAdminDashboard() {
-    // Load real-time data
-    updateLiveStats();
-    loadActivityFeed();
-    loadFinancialData();
-}
+    hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loading-screen');
+        gsap.to(loadingScreen, {
+            opacity: 0,
+            duration: 0.5,
+            onComplete: () => {
+                loadingScreen.style.display = 'none';
+            }
+        });
+    }
 
-function updateLiveStats() {
-    // Update all statistics in real-time
-    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-    document.getElementById('liveUsers').textContent = users.length;
-    
-    // Update other stats...
-}
+    startBackgroundServices() {
+        // Update stats every 30 seconds
+        setInterval(() => {
+            this.loadStats();
+        }, 30000);
+        
+        // Check for updates
+        setInterval(() => {
+            this.checkForUpdates();
+        }, 60000);
+    }
 
-// System Controls
-function systemShutdown() {
-    if (confirm("🚨 ARE YOU SURE? This will temporarily disable the system!")) {
-        // Implement shutdown logic
-        alert("System shutdown initiated...");
+    async checkForUpdates() {
+        // Implementation for checking updates
+        console.log('Checking for updates...');
+    }
+
+    async loadConfig() {
+        // Load configuration from config.js
+        if (typeof CONFIG !== 'undefined') {
+            this.config = CONFIG;
+        }
     }
 }
 
-// Tab Management
-document.querySelectorAll('.nav-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const tabName = this.getAttribute('data-tab');
-        openAdminTab(tabName);
+// ===== INITIALIZE APPLICATION =====
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize with GSAP
+    gsap.registerPlugin();
+    
+    // Create app instance
+    window.crunchyApp = new CrunchyRollApp();
+    
+    // Prevent right-click
+    document.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        window.crunchyApp.showNotification('Right-click is disabled', 'warning');
     });
 });
 
-function openAdminTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-pane').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    
-    // Remove active from buttons
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Show selected tab
-    document.getElementById(tabName + 'Tab').classList.add('active');
-    event.currentTarget.classList.add('active');
-}
+// ===== ERROR HANDLING =====
+window.addEventListener('error', (event) => {
+    console.error('Application error:', event.error);
+});
+
+// ===== OFFLINE DETECTION =====
+window.addEventListener('online', () => {
+    window.crunchyApp.showNotification('Connection restored', 'success');
+});
+
+window.addEventListener('offline', () => {
+    window.crunchyApp.showNotification('You are offline', 'warning');
+});
