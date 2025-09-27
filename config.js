@@ -56,3 +56,14 @@ if (typeof module !== 'undefined' && module.exports) {
 }
 
 window.CONFIG = CONFIG;
+FILES: {
+    ACCOUNTS: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Crunchyaccount.txt",
+    SUSPICIOUS: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Crunchysuspecious.txt",
+    DEAD: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Crunchydead.txt",
+    VERIFIED: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Crunchyverified.txt",
+    GENERATION_LOG: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Crunchygenerationbyusers.txt",
+    USERS: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/botuser.txt",
+    BANNED: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/banneduser.txt",
+    ADMINS: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/admin.txt",
+    JOINED_USERS: "https://raw.githubusercontent.com/hk023455/my-mini-app-/main/Joineduser.txt"
+},
