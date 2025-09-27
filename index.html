@@ -1,270 +1,213 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡️ PREMIUM GENERATOR PRO</title>
+    <title>CrunchyRoll Premium • 3D Account Generator</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/21.6.16/i18next.min.js"></script>
 </head>
-<body class="dark-theme">
-    <!-- 3D Parallax Background -->
-    <div class="parallax-bg">
-        <div class="bg-layer layer-1" data-depth="0.1"></div>
-        <div class="bg-layer layer-2" data-depth="0.3"></div>
-        <div class="bg-layer layer-3" data-depth="0.6"></div>
-        <div class="bg-layer layer-4" data-depth="0.8"></div>
+<body>
+    <!-- 3D Background Particles -->
+    <canvas id="particle-canvas"></canvas>
+    
+    <!-- Custom Animated Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="cursor-trail"></div>
+    
+    <!-- Sound Control -->
+    <div class="sound-control">
+        <button id="sound-toggle" class="sound-btn">🔊</button>
+        <div class="volume-slider">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.5">
+        </div>
     </div>
 
-    <!-- Floating Particles -->
-    <div class="particles"></div>
-
     <!-- Language Selector -->
-    <div class="language-selector">
-        <select id="languageSelect" onchange="changeLanguage(this.value)">
-            <option value="hi">🇮🇳 Hindi</option>
+    <div class="language-switcher">
+        <select id="language-select">
             <option value="en">🇺🇸 English</option>
-            <option value="ta">🇮🇳 Tamil</option>
-            <option value="te">🇮🇳 Telugu</option>
-            <option value="kn">🇮🇳 Kannada</option>
+            <option value="hi">🇮🇳 Hindi</option>
+            <option value="es">🇪🇸 Spanish</option>
         </select>
     </div>
 
-    <!-- Theme Toggle -->
-    <div class="theme-toggle">
-        <button id="themeBtn" onclick="toggleTheme()">
-            <i class="fas fa-moon"></i>
-        </button>
-    </div>
-
     <!-- Main Container -->
-    <div class="container-3d">
-        <!-- Header -->
-        <header class="header-3d">
-            <div class="logo-glitch">
-                <span class="glitch-text" data-text="⚡️ PREMIUM GENERATOR PRO">⚡️ PREMIUM GENERATOR PRO</span>
+    <div class="container">
+        <!-- 3D Header Section -->
+        <header class="hero-section">
+            <div class="floating-anime-characters">
+                <div class="anime-char character-1"></div>
+                <div class="anime-char character-2"></div>
+                <div class="anime-char character-3"></div>
             </div>
-            <div class="header-actions">
-                <button class="premium-btn" onclick="showPremiumPlans()">
-                    <i class="fas fa-crown"></i>
-                    <span data-lang="premium">PREMIUM</span>
-                </button>
-                <button class="profile-btn" onclick="showProfile()">
-                    <i class="fas fa-user"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Welcome Section -->
-            <section class="welcome-section">
-                <div class="welcome-card-3d">
-                    <div class="gate-design">
-                        ╔═─────────────═╗<br>
-                        <span class="welcome-title" data-lang="welcome">WELCOME TO</span><br>
-                        <span class="bot-title">⚡️ PREMIUM GENERATOR PRO</span><br>
-                        ╚═─────────────═╝
+            
+            <h1 class="glowing-title" data-text="CRUNCHYROLL PREMIUM">
+                CRUNCHYROLL PREMIUM
+            </h1>
+            <p class="subtitle" data-i18n="subtitle">Advanced 3D Account Management System</p>
+            
+            <!-- Channel Verification -->
+            <div class="channel-verification">
+                <div class="verification-card">
+                    <div class="status-indicator">
+                        <div class="pulse-ring"></div>
+                        <div class="status-icon">🔒</div>
                     </div>
-                    <div class="gate-subtitle" data-lang="gate_locked">🔒 The Gate Is Locked...</div>
-                    <div class="gate-instruction" data-lang="unlock_instruction">👉 Unlock It By Verifying Below 👇</div>
-
-                    <!-- CAPTCHA Verification -->
-                    <div class="captcha-section">
-                        <div class="captcha-box">
-                            <span id="captchaText" class="captcha-text">A7B3C9</span>
-                            <input type="text" id="captchaInput" placeholder="Enter CAPTCHA" class="captcha-input">
-                            <button onclick="refreshCaptcha()" class="refresh-captcha">
-                                <i class="fas fa-redo"></i>
-                            </button>
-                        </div>
-                        <button onclick="verifyCaptcha()" class="verify-btn-3d">
-                            <span class="btn-text" data-lang="verify_join">✅ Verify & Continue</span>
-                            <span class="btn-glow"></span>
+                    <div class="status-content">
+                        <h3 data-i18n="channel-verify">Channel Verification Required</h3>
+                        <p data-i18n="channel-desc">Join our channels to unlock account generation</p>
+                        <button id="verify-channels" class="verify-btn" data-i18n="verify-now">
+                            Verify Now
                         </button>
                     </div>
                 </div>
-            </section>
+            </div>
+        </header>
 
-            <!-- Services Section -->
-            <section id="servicesSection" class="services-section" style="display: none;">
-                <h2 class="section-title-3d" data-lang="select_service">🎯 SELECT YOUR SERVICE</h2>
+        <!-- Real-time Stats Dashboard -->
+        <section class="dashboard-section">
+            <div class="stats-container">
+                <div class="stat-card" data-stat="accounts">
+                    <div class="card-3d">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <span class="stat-label" data-i18n="total-accounts">Total Accounts</span>
+                            <span class="stat-value" id="total-accounts">0</span>
+                        </div>
+                        <div class="stat-graph"></div>
+                    </div>
+                </div>
                 
-                <div class="services-grid-3d">
-                    <!-- Crunchyroll -->
-                    <div class="service-card-3d" onclick="selectService('crunchyroll')">
-                        <div class="service-icon-3d">🍥</div>
-                        <h3 data-lang="crunchyroll">CRUNCHYROLL</h3>
-                        <p data-lang="premium_anime">Premium Anime Accounts</p>
-                        <div class="card-hover-effect"></div>
-                    </div>
-
-                    <!-- Express VPN -->
-                    <div class="service-card-3d" onclick="selectService('expressvpn')">
-                        <div class="service-icon-3d">🛡️</div>
-                        <h3>EXPRESS VPN</h3>
-                        <p data-lang="premium_vpn">Premium VPN Accounts</p>
-                        <div class="card-hover-effect"></div>
-                    </div>
-
-                    <!-- Nord VPN -->
-                    <div class="service-card-3d" onclick="selectService('nordvpn')">
-                        <div class="service-icon-3d">🔒</div>
-                        <h3>NORD VPN</h3>
-                        <p data-lang="secure_vpn">Secure VPN Accounts</p>
-                        <div class="card-hover-effect"></div>
-                    </div>
-
-                    <!-- More Services -->
-                    <div class="service-card-3d premium-feature" onclick="showPremiumPlans()">
-                        <div class="service-icon-3d">⭐</div>
-                        <h3 data-lang="more_services">MORE SERVICES</h3>
-                        <p data-lang="premium_unlock">Unlock with Premium</p>
-                        <div class="premium-badge" data-lang="premium">PREMIUM</div>
-                        <div class="card-hover-effect"></div>
+                <div class="stat-card" data-stat="working">
+                    <div class="card-3d">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <span class="stat-label" data-i18n="working-accounts">Working Accounts</span>
+                            <span class="stat-value" id="working-accounts">0</span>
+                        </div>
+                        <div class="stat-graph"></div>
                     </div>
                 </div>
-
-                <!-- User Stats -->
-                <div class="user-stats">
-                    <div class="stat-item">
-                        <span class="stat-number" id="userGenerations">0</span>
-                        <span class="stat-label" data-lang="generations">Generations</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="userReferrals">0</span>
-                        <span class="stat-label" data-lang="referrals">Referrals</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-number" id="userPoints">0</span>
-                        <span class="stat-label" data-lang="points">Points</span>
+                
+                <div class="stat-card" data-stat="users">
+                    <div class="card-3d">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <span class="stat-label" data-i18n="total-users">Total Users</span>
+                            <span class="stat-value" id="total-users">0</span>
+                        </div>
+                        <div class="stat-graph"></div>
                     </div>
                 </div>
-            </section>
-        </main>
+                
+                <div class="stat-card" data-stat="today">
+                    <div class="card-3d">
+                        <div class="stat-icon">🆕</div>
+                        <div class="stat-info">
+                            <span class="stat-label" data-i18n="today-gen">Today's Generation</span>
+                            <span class="stat-value" id="today-generations">0</span>
+                        </div>
+                        <div class="stat-graph"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Account Generator Section -->
+        <section class="generator-section">
+            <div class="generator-container">
+                <div class="generator-header">
+                    <h2 data-i18n="generate-account">Generate Premium Account</h2>
+                    <div class="cooldown-timer">
+                        <span data-i18n="next-available">Next available in:</span>
+                        <span id="cooldown-time">00:00</span>
+                    </div>
+                </div>
+                
+                <button id="generate-account" class="generate-btn">
+                    <span class="btn-glow"></span>
+                    <span class="btn-text" data-i18n="generate-now">GENERATE NOW</span>
+                    <div class="btn-loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </button>
+                
+                <div id="account-result" class="account-result">
+                    <div class="result-header">
+                        <h3 data-i18n="account-details">Account Details</h3>
+                        <div class="result-actions">
+                            <button class="copy-btn" data-copy="all">📋 Copy All</button>
+                            <button class="test-btn">🧪 Test Account</button>
+                        </div>
+                    </div>
+                    <div class="account-details">
+                        <div class="detail-item">
+                            <span data-i18n="email">Email:</span>
+                            <code id="account-email">waiting...</code>
+                            <button class="copy-btn" data-copy="email">📋</button>
+                        </div>
+                        <div class="detail-item">
+                            <span data-i18n="password">Password:</span>
+                            <code id="account-password">waiting...</code>
+                            <button class="copy-btn" data-copy="password">📋</button>
+                        </div>
+                        <div class="detail-item">
+                            <span data-i18n="status">Status:</span>
+                            <span id="account-status" class="status-pending">Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="action-section">
+            <div class="action-grid">
+                <button class="action-btn admin-btn" id="open-admin">
+                    <span class="btn-icon">👑</span>
+                    <span data-i18n="admin-panel">Admin Panel</span>
+                </button>
+                
+                <button class="action-btn stats-btn" id="open-stats">
+                    <span class="btn-icon">📈</span>
+                    <span data-i18n="detailed-stats">Detailed Stats</span>
+                </button>
+                
+                <button class="action-btn vpn-btn" id="open-vpn">
+                    <span class="btn-icon">🛡️</span>
+                    <span data-i18n="vpn-services">VPN Services</span>
+                </button>
+                
+                <button class="action-btn support-btn" id="open-support">
+                    <span class="btn-icon">💬</span>
+                    <span data-i18n="live-support">Live Support</span>
+                </button>
+            </div>
+        </section>
     </div>
 
-    <!-- Account Generation Popup -->
-    <div id="accountPopup" class="popup-modal">
-        <div class="popup-content-3d">
-            <div class="popup-header">
-                ╭─────────────∘◦ ✧ ◦∘─────────────╮<br>
-                <span class="popup-title" id="popupServiceTitle">🎞️ SERVICE</span><br>
-                ╰─────────────∘◦ ✧ ◦∘─────────────╯
-            </div>
-            
-            <div class="account-info-3d">
-                <div class="info-item">
-                    <span class="info-label" data-lang="email">📧 EMAIL:</span>
-                    <span id="popupEmail" class="info-value">generating...</span>
-                </div>
-                <div class="info-item">
-                    <span class="info-label" data-lang="password">🔑 PASSWORD:</span>
-                    <span id="popupPassword" class="info-value">generating...</span>
-                </div>
-            </div>
+    <!-- Confetti Container -->
+    <div id="confetti-container"></div>
 
-            <div class="popup-message" data-lang="account_ready">
-                🌀 Account ready for your use<br>
-                🔥 Enjoy premium experience
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-animation">
+                <div class="anime-loader"></div>
             </div>
-
-            <div class="popup-actions">
-                <button class="action-btn success" onclick="markWorking()">
-                    <span data-lang="working">✅ WORKING</span>
-                </button>
-                <button class="action-btn danger" onclick="markNotWorking()">
-                    <span data-lang="not_working">❌ NOT WORKING</span>
-                </button>
-            </div>
-
-            <button class="close-popup" onclick="closePopup()">✕</button>
+            <h2 data-i18n="loading">Loading Premium Experience</h2>
+            <p data-i18n="loading-desc">Initializing 3D environment...</p>
         </div>
     </div>
 
-    <!-- Proof Modal -->
-    <div id="proofModal" class="proof-modal">
-        <div class="proof-content-3d">
-            <h3 data-lang="provide_proof">📸 PROVIDE PROOF</h3>
-            <p data-lang="proof_instruction">Please provide screenshot as proof</p>
-            
-            <div class="proof-options">
-                <button onclick="submitProof('working')" class="proof-btn working">
-                    <span data-lang="working_proof">✅ WORKING PROOF</span>
-                </button>
-                <button onclick="submitProof('not_working')" class="proof-btn not-working">
-                    <span data-lang="not_working_proof">❌ NOT WORKING PROOF</span>
-                </button>
-            </div>
+    <!-- Notification System -->
+    <div id="notification-center" class="notification-center"></div>
 
-            <div class="proof-upload">
-                <input type="file" id="proofImage" accept="image/*" hidden>
-                <button onclick="uploadProofImage()" class="upload-btn">
-                    <i class="fas fa-cloud-upload-alt"></i>
-                    <span data-lang="upload_screenshot">UPLOAD SCREENSHOT</span>
-                </button>
-                <div id="proofPreview"></div>
-            </div>
-
-            <div class="proof-actions">
-                <button onclick="sendProofToSupport()" class="send-proof-btn">
-                    <span data-lang="send_to_support">📤 SEND TO SUPPORT</span>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Premium Plans Modal -->
-    <div id="premiumModal" class="premium-modal">
-        <div class="premium-content">
-            <h2 data-lang="premium_plans">⭐ PREMIUM PLANS</h2>
-            
-            <div class="plans-grid">
-                <div class="plan-card">
-                    <h3 data-lang="basic">BASIC</h3>
-                    <div class="plan-price">₹299<span data-lang="month">/month</span></div>
-                    <ul>
-                        <li data-lang="basic_feature1">5 Daily Generations</li>
-                        <li data-lang="basic_feature2">All Services Access</li>
-                        <li data-lang="basic_feature3">Priority Support</li>
-                    </ul>
-                    <button class="plan-btn" onclick="selectPlan('basic')" data-lang="select_plan">SELECT PLAN</button>
-                </div>
-
-                <div class="plan-card popular">
-                    <div class="popular-badge" data-lang="popular">POPULAR</div>
-                    <h3 data-lang="pro">PRO</h3>
-                    <div class="plan-price">₹599<span data-lang="month">/month</span></div>
-                    <ul>
-                        <li data-lang="pro_feature1">Unlimited Generations</li>
-                        <li data-lang="pro_feature2">All Services + New Releases</li>
-                        <li data-lang="pro_feature3">24/7 Priority Support</li>
-                        <li data-lang="pro_feature4">Referral Earnings</li>
-                    </ul>
-                    <button class="plan-btn pro-btn" onclick="selectPlan('pro')" data-lang="select_plan">SELECT PLAN</button>
-                </div>
-            </div>
-
-            <!-- QR Code Payment -->
-            <div class="payment-section">
-                <h3 data-lang="scan_to_pay">Scan QR Code to Pay</h3>
-                <div class="qr-code">
-                    <!-- Add your QR code image here -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=UPI_QR_CODE_DATA" alt="QR Code">
-                </div>
-                <p data-lang="payment_instruction">Pay and send screenshot to owner</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Panel -->
-    <div id="adminPanel" class="admin-panel">
-        <!-- Admin content here -->
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/parallax/3.1.0/parallax.min.js"></script>
+    <!-- Script Includes -->
     <script src="config.js"></script>
     <script src="languages.js"></script>
     <script src="payment.js"></script>
@@ -272,717 +215,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-<!-- Welcome Section ke andar Captcha ke baad -->
-<div class="channel-join-section">
-    <h3 data-lang="join_channels">📺 Join Our Channels</h3>
-    
-    <div class="channels-list">
-        <div class="channel-item">
-            <div class="channel-info">
-                <span class="channel-icon">⚡</span>
-                <span class="channel-name">Main Updates Channel</span>
-            </div>
-            <button class="channel-join-btn" onclick="joinChannel('main')" data-lang="join">Join</button>
-        </div>
-        
-        <div class="channel-item">
-            <div class="channel-info">
-                <span class="channel-icon">🔧</span>
-                <span class="channel-name">Support & Help</span>
-            </div>
-            <button class="channel-join-btn" onclick="joinChannel('support')" data-lang="join">Join</button>
-        </div>
-        
-        <div class="channel-item">
-            <div class="channel-info">
-                <span class="channel-icon">📢</span>
-                <span class="channel-name">Announcements</span>
-            </div>
-            <button class="channel-join-btn" onclick="joinChannel('announcement')" data-lang="join">Join</button>
-        </div>
-    </div>
-
-    <div class="verification-status">
-        <label class="checkbox-container">
-            <input type="checkbox" id="channelVerifyCheckbox" onchange="toggleVerifyButton()">
-            <span class="checkmark"></span>
-            <span data-lang="verify_join">I have joined all channels</span>
-        </label>
-    </div>
-</div>
-<!-- Admin Panel -->
-<div id="adminPanel" class="admin-panel">
-    <div class="admin-header">
-        <div class="admin-title">
-            <h2>👑 ADMIN DASHBOARD</h2>
-            <span class="admin-subtitle">Premium Generator Pro</span>
-        </div>
-        <div class="admin-actions">
-            <button class="admin-btn refresh-btn" onclick="refreshAdminData()">
-                <i class="fas fa-sync-alt"></i> Refresh
-            </button>
-            <button class="admin-btn logout-btn" onclick="logoutAdmin()">
-                <i class="fas fa-sign-out-alt"></i> Logout
-            </button>
-            <button class="admin-btn close-admin" onclick="closeAdminPanel()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-
-    <div class="admin-tabs">
-        <button class="admin-tab active" onclick="openAdminTab('dashboard')">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
-        </button>
-        <button class="admin-tab" onclick="openAdminTab('accounts')">
-            <i class="fas fa-key"></i> Accounts Management
-        </button>
-        <button class="admin-tab" onclick="openAdminTab('users')">
-            <i class="fas fa-users"></i> Users Management
-        </button>
-        <button class="admin-tab" onclick="openAdminTab('payments')">
-            <i class="fas fa-rupee-sign"></i> Payments
-        </button>
-        <button class="admin-tab" onclick="openAdminTab('settings')">
-            <i class="fas fa-cog"></i> Settings
-        </button>
-    </div>
-
-    <div class="admin-content">
-        <!-- Dashboard Tab -->
-        <div id="dashboardTab" class="admin-tab-content active">
-            <div class="stats-grid-admin">
-                <div class="stat-card-admin">
-                    <div class="stat-icon"><i class="fas fa-users"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Users</h3>
-                        <span id="adminTotalUsers">0</span>
-                    </div>
-                </div>
-                <div class="stat-card-admin">
-                    <div class="stat-icon"><i class="fas fa-key"></i></div>
-                    <div class="stat-info">
-                        <h3>Total Generations</h3>
-                        <span id="adminTotalGens">0</span>
-                    </div>
-                </div>
-                <div class="stat-card-admin">
-                    <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
-                    <div class="stat-info">
-                        <h3>Today's Revenue</h3>
-                        <span id="adminTodayRevenue">₹0</span>
-                    </div>
-                </div>
-                <div class="stat-card-admin">
-                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
-                    <div class="stat-info">
-                        <h3>Premium Users</h3>
-                        <span id="adminPremiumUsers">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="admin-charts">
-                <div class="chart-container">
-                    <h3>📈 Daily Generations</h3>
-                    <canvas id="generationsChart"></canvas>
-                </div>
-                <div class="chart-container">
-                    <h3>💰 Revenue Analytics</h3>
-                    <canvas id="revenueChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Accounts Management Tab -->
-        <div id="accountsTab" class="admin-tab-content">
-            <div class="tab-actions">
-                <button class="action-btn-primary" onclick="showAddAccountsModal()">
-                    <i class="fas fa-plus"></i> Add Accounts
-                </button>
-                <button class="action-btn-secondary" onclick="exportAccounts()">
-                    <i class="fas fa-download"></i> Export
-                </button>
-            </div>
-
-            <div class="accounts-management">
-                <div class="service-accounts">
-                    <h3>🍥 Crunchyroll Accounts</h3>
-                    <div class="accounts-stats">
-                        <span>Total: <strong id="crunchyTotal">0</strong></span>
-                        <span>Active: <strong id="crunchyActive">0</strong></span>
-                        <span>Working: <strong id="crunchyWorking">0</strong></span>
-                    </div>
-                    <div class="accounts-list-admin" id="crunchyAccountsList"></div>
-                </div>
-
-                <div class="service-accounts">
-                    <h3>🛡️ Express VPN Accounts</h3>
-                    <div class="accounts-stats">
-                        <span>Total: <strong id="vpnExpressTotal">0</strong></span>
-                        <span>Active: <strong id="vpnExpressActive">0</strong></span>
-                    </div>
-                    <div class="accounts-list-admin" id="expressVpnAccountsList"></div>
-                </div>
-
-                <div class="service-accounts">
-                    <h3>🔒 Nord VPN Accounts</h3>
-                    <div class="accounts-stats">
-                        <span>Total: <strong id="vpnNordTotal">0</strong></span>
-                        <span>Active: <strong id="vpnNordActive">0</strong></span>
-                    </div>
-                    <div class="accounts-list-admin" id="nordVpnAccountsList"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Users Management Tab -->
-        <div id="usersTab" class="admin-tab-content">
-            <div class="users-filters">
-                <input type="text" id="userSearch" placeholder="Search users..." class="search-input">
-                <select id="userFilter" class="filter-select">
-                    <option value="all">All Users</option>
-                    <option value="premium">Premium Users</option>
-                    <option value="active">Active Today</option>
-                    <option value="banned">Banned Users</option>
-                </select>
-            </div>
-
-            <div class="users-list-admin" id="usersListAdmin"></div>
-        </div>
-
-        <!-- Payments Tab -->
-        <div id="paymentsTab" class="admin-tab-content">
-            <div class="payments-stats">
-                <div class="payment-stat">
-                    <h4>Total Revenue</h4>
-                    <span id="totalRevenue">₹0</span>
-                </div>
-                <div class="payment-stat">
-                    <h4>Pending Verifications</h4>
-                    <span id="pendingPayments">0</span>
-                </div>
-                <div class="payment-stat">
-                    <h4>Successful Today</h4>
-                    <span id="successfulToday">0</span>
-                </div>
-            </div>
-
-            <div class="payments-list" id="paymentsList"></div>
-        </div>
-
-        <!-- Settings Tab -->
-        <div id="settingsTab" class="admin-tab-content">
-            <div class="settings-section">
-                <h3>⚙️ System Settings</h3>
-                <div class="setting-item">
-                    <label>Daily Generation Limit:</label>
-                    <input type="number" id="dailyLimit" value="3" class="setting-input">
-                </div>
-                <div class="setting-item">
-                    <label>Enable CAPTCHA:</label>
-                    <input type="checkbox" id="enableCaptcha" checked class="setting-checkbox">
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3>🔗 Channel Links</h3>
-                <div class="setting-item">
-                    <label>Main Channel:</label>
-                    <input type="text" id="mainChannelLink" class="setting-input">
-                </div>
-                <div class="setting-item">
-                    <label>Support Channel:</label>
-                    <input type="text" id="supportChannelLink" class="setting-input">
-                </div>
-            </div>
-
-            <button class="save-settings-btn" onclick="saveAdminSettings()">
-                <i class="fas fa-save"></i> Save Settings
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- Add Accounts Modal -->
-<div id="addAccountsModal" class="admin-modal">
-    <div class="modal-content">
-        <h3>Add Accounts</h3>
-        <select id="accountService" class="modal-select">
-            <option value="crunchyroll">Crunchyroll</option>
-            <option value="expressvpn">Express VPN</option>
-            <option value="nordvpn">Nord VPN</option>
-        </select>
-        <textarea id="accountsTextarea" placeholder="Enter accounts in format: email:password&#10;One account per line" 
-                  class="modal-textarea"></textarea>
-        <div class="modal-actions">
-            <button class="modal-btn primary" onclick="addBulkAccounts()">Add Accounts</button>
-            <button class="modal-btn secondary" onclick="closeAddAccountsModal()">Cancel</button>
-        </div>
-    </div>
-</div>
-<!-- Services Grid ke baad ek secret admin card -->
-<div class="service-card-3d secret-admin" onclick="showAdminLogin()" style="display: none;">
-    <div class="service-icon-3d">👑</div>
-    <h3>ADMIN PANEL</h3>
-    <p>Restricted Access</p>
-    <div class="secret-badge">SECRET</div>
-    <div class="card-hover-effect"></div>
-</div>
-
-<!-- Admin Login Modal -->
-<div id="adminLoginModal" class="admin-login-modal">
-    <div class="admin-login-content">
-        <div class="login-header">
-            <h3>🔐 ADMIN ACCESS</h3>
-            <p>Enter master password</p>
-        </div>
-        
-        <div class="password-input-group">
-            <input type="password" id="adminPassword" placeholder="Enter admin password" 
-                   class="admin-password-input" onkeypress="handleAdminKeyPress(event)">
-            <button onclick="checkAdminPassword()" class="password-toggle">
-                <i class="fas fa-eye"></i>
-            </button>
-        </div>
-        
-        <button onclick="checkAdminPassword()" class="admin-login-btn">
-            <i class="fas fa-unlock"></i> ACCESS ADMIN PANEL
-        </button>
-        
-        <div id="adminLoginError" class="error-message"></div>
-        
-        <div class="security-notice">
-            <i class="fas fa-shield-alt"></i>
-            <span>This action is logged for security</span>
-        </div>
-    </div>
-</div>
-
-<!-- Advanced Admin Panel (Hidden) -->
-<div id="advancedAdminPanel" class="advanced-admin-panel">
-    <div class="admin-header-advanced">
-        <div class="admin-title-section">
-            <div class="admin-avatar">
-                <i class="fas fa-crown"></i>
-            </div>
-            <div>
-                <h1>ADMIN COMMAND CENTER</h1>
-                <p>Premium Generator Pro • Master Control</p>
-            </div>
-        </div>
-        
-        <div class="admin-controls">
-            <div class="admin-status">
-                <span class="status-indicator online"></span>
-                <span>SYSTEM ONLINE</span>
-            </div>
-            <button class="control-btn danger" onclick="systemShutdown()">
-                <i class="fas fa-power-off"></i> SHUTDOWN
-            </button>
-            <button class="control-btn warning" onclick="logoutAdmin()">
-                <i class="fas fa-sign-out-alt"></i> LOGOUT
-            </button>
-        </div>
-    </div>
-
-    <!-- Advanced Admin Tabs -->
-    <div class="admin-nav-advanced">
-        <button class="nav-btn active" data-tab="overview">
-            <i class="fas fa-chart-network"></i> OVERVIEW
-        </button>
-        <button class="nav-btn" data-tab="accounts">
-            <i class="fas fa-database"></i> ACCOUNTS DB
-        </button>
-        <button class="nav-btn" data-tab="users">
-            <i class="fas fa-users-cog"></i> USERS CONTROL
-        </button>
-        <button class="nav-btn" data-tab="financial">
-            <i class="fas fa-coins"></i> FINANCIAL
-        </button>
-        <button class="nav-btn" data-tab="automation">
-            <i class="fas fa-robot"></i> AUTOMATION
-        </button>
-        <button class="nav-btn" data-tab="security">
-            <i class="fas fa-shield-halved"></i> SECURITY
-        </button>
-    </div>
-
-    <!-- Tab Contents -->
-    <div class="admin-content-advanced">
-        <!-- Overview Tab -->
-        <div id="overviewTab" class="tab-pane active">
-            <div class="real-time-stats">
-                <div class="stat-card-advanced">
-                    <i class="fas fa-rocket"></i>
-                    <div class="stat-data">
-                        <span class="stat-number" id="liveUsers">0</span>
-                        <span class="stat-label">LIVE USERS</span>
-                    </div>
-                    <div class="stat-trend up">+12%</div>
-                </div>
-                <!-- More stat cards -->
-            </div>
-            
-            <div class="live-monitoring">
-                <h3>📊 LIVE ACTIVITY MONITOR</h3>
-                <div class="activity-feed" id="adminActivityFeed"></div>
-            </div>
-        </div>
-
-        <!-- Accounts Database Tab -->
-        <div id="accountsTab" class="tab-pane">
-            <div class="database-controls">
-                <button class="db-btn primary" onclick="importAccounts()">
-                    <i class="fas fa-file-import"></i> BULK IMPORT
-                </button>
-                <button class="db-btn success" onclick="generateAccounts()">
-                    <i class="fas fa-plus"></i> AUTO-GENERATE
-                </button>
-                <button class="db-btn danger" onclick="clearAllAccounts()">
-                    <i class="fas fa-trash"></i> PURGE DB
-                </button>
-            </div>
-            
-            <div class="database-view">
-                <!-- Advanced accounts management -->
-            </div>
-        </div>
-
-        <!-- Users Control Tab -->
-        <div id="usersTab" class="tab-pane">
-            <div class="user-controls">
-                <div class="search-section">
-                    <input type="text" id="userSearchAdvanced" placeholder="🔍 Search users by ID, IP, email..." 
-                           class="advanced-search">
-                    <button onclick="advancedUserSearch()" class="search-btn-advanced">
-                        <i class="fas fa-search"></i> DEEP SCAN
-                    </button>
-                </div>
-                
-                <div class="user-actions-grid">
-                    <button class="action-btn" onclick="massMessageUsers()">
-                        <i class="fas fa-broadcast-tower"></i> MASS MESSAGE
-                    </button>
-                    <button class="action-btn" onclick="exportUserData()">
-                        <i class="fas fa-download"></i> EXPORT DATA
-                    </button>
-                    <button class="action-btn danger" onclick="banMultipleUsers()">
-                        <i class="fas fa-ban"></i> BATCH BAN
-                    </button>
-                </div>
-            </div>
-            
-            <div class="users-grid-advanced" id="usersGridAdvanced"></div>
-        </div>
-
-        <!-- Financial Tab -->
-        <div id="financialTab" class="tab-pane">
-            <div class="revenue-dashboard">
-                <div class="financial-cards">
-                    <div class="finance-card">
-                        <h4>TOTAL REVENUE</h4>
-                        <span class="amount">₹<span id="totalRevenue">0</span></span>
-                    </div>
-                    <div class="finance-card">
-                        <h4>PENDING</h4>
-                        <span class="amount pending">₹<span id="pendingRevenue">0</span></span>
-                    </div>
-                    <div class="finance-card">
-                        <h4>TODAY'S INCOME</h4>
-                        <span class="amount today">₹<span id="todayRevenue">0</span></span>
-                    </div>
-                </div>
-                
-                <div class="payment-verification">
-                    <h4>💰 PAYMENT VERIFICATION QUEUE</h4>
-                    <div id="paymentQueue"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Automation Tab -->
-        <div id="automationTab" class="tab-pane">
-            <div class="automation-controls">
-                <h3>🤖 SMART AUTOMATION SYSTEM</h3>
-                
-                <div class="automation-card">
-                    <h4>🔄 AUTO-ACCOUNT REFILL</h4>
-                    <div class="toggle-group">
-                        <label class="switch">
-                            <input type="checkbox" id="autoRefillToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <span>Enable automatic account refill</span>
-                    </div>
-                </div>
-                
-                <div class="automation-card">
-                    <h4>📧 AUTO-RESPONSE SYSTEM</h4>
-                    <textarea id="autoResponseTemplate" class="auto-response-area" 
-                              placeholder="Enter auto-response template..."></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Security Tab -->
-        <div id="securityTab" class="tab-pane">
-            <div class="security-dashboard">
-                <h3>🛡️ SECURITY COMMAND CENTER</h3>
-                
-                <div class="security-cards">
-                    <div class="security-card">
-                        <h4>IP MONITORING</h4>
-                        <div class="ip-list" id="suspiciousIPs"></div>
-                    </div>
-                    
-                    <div class="security-card">
-                        <h4>ACCESS LOGS</h4>
-                        <div class="access-logs" id="adminAccessLogs"></div>
-                    </div>
-                </div>
-                
-                <div class="security-actions">
-                    <button class="security-btn" onclick="backupSystem()">
-                        <i class="fas fa-save"></i> BACKUP SYSTEM
-                    </button>
-                    <button class="security-btn danger" onclick="resetSystem()">
-                        <i class="fas fa-exclamation-triangle"></i> FACTORY RESET
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div><!-- Services Grid ke baad ek secret admin card -->
-<div class="service-card-3d secret-admin" onclick="showAdminLogin()" style="display: none;">
-    <div class="service-icon-3d">👑</div>
-    <h3>ADMIN PANEL</h3>
-    <p>Restricted Access</p>
-    <div class="secret-badge">SECRET</div>
-    <div class="card-hover-effect"></div>
-</div>
-
-<!-- Admin Login Modal -->
-<div id="adminLoginModal" class="admin-login-modal">
-    <div class="admin-login-content">
-        <div class="login-header">
-            <h3>🔐 ADMIN ACCESS</h3>
-            <p>Enter master password</p>
-        </div>
-        
-        <div class="password-input-group">
-            <input type="password" id="adminPassword" placeholder="Enter admin password" 
-                   class="admin-password-input" onkeypress="handleAdminKeyPress(event)">
-            <button onclick="checkAdminPassword()" class="password-toggle">
-                <i class="fas fa-eye"></i>
-            </button>
-        </div>
-        
-        <button onclick="checkAdminPassword()" class="admin-login-btn">
-            <i class="fas fa-unlock"></i> ACCESS ADMIN PANEL
-        </button>
-        
-        <div id="adminLoginError" class="error-message"></div>
-        
-        <div class="security-notice">
-            <i class="fas fa-shield-alt"></i>
-            <span>This action is logged for security</span>
-        </div>
-    </div>
-</div>
-
-<!-- Advanced Admin Panel (Hidden) -->
-<div id="advancedAdminPanel" class="advanced-admin-panel">
-    <div class="admin-header-advanced">
-        <div class="admin-title-section">
-            <div class="admin-avatar">
-                <i class="fas fa-crown"></i>
-            </div>
-            <div>
-                <h1>ADMIN COMMAND CENTER</h1>
-                <p>Premium Generator Pro • Master Control</p>
-            </div>
-        </div>
-        
-        <div class="admin-controls">
-            <div class="admin-status">
-                <span class="status-indicator online"></span>
-                <span>SYSTEM ONLINE</span>
-            </div>
-            <button class="control-btn danger" onclick="systemShutdown()">
-                <i class="fas fa-power-off"></i> SHUTDOWN
-            </button>
-            <button class="control-btn warning" onclick="logoutAdmin()">
-                <i class="fas fa-sign-out-alt"></i> LOGOUT
-            </button>
-        </div>
-    </div>
-
-    <!-- Advanced Admin Tabs -->
-    <div class="admin-nav-advanced">
-        <button class="nav-btn active" data-tab="overview">
-            <i class="fas fa-chart-network"></i> OVERVIEW
-        </button>
-        <button class="nav-btn" data-tab="accounts">
-            <i class="fas fa-database"></i> ACCOUNTS DB
-        </button>
-        <button class="nav-btn" data-tab="users">
-            <i class="fas fa-users-cog"></i> USERS CONTROL
-        </button>
-        <button class="nav-btn" data-tab="financial">
-            <i class="fas fa-coins"></i> FINANCIAL
-        </button>
-        <button class="nav-btn" data-tab="automation">
-            <i class="fas fa-robot"></i> AUTOMATION
-        </button>
-        <button class="nav-btn" data-tab="security">
-            <i class="fas fa-shield-halved"></i> SECURITY
-        </button>
-    </div>
-
-    <!-- Tab Contents -->
-    <div class="admin-content-advanced">
-        <!-- Overview Tab -->
-        <div id="overviewTab" class="tab-pane active">
-            <div class="real-time-stats">
-                <div class="stat-card-advanced">
-                    <i class="fas fa-rocket"></i>
-                    <div class="stat-data">
-                        <span class="stat-number" id="liveUsers">0</span>
-                        <span class="stat-label">LIVE USERS</span>
-                    </div>
-                    <div class="stat-trend up">+12%</div>
-                </div>
-                <!-- More stat cards -->
-            </div>
-            
-            <div class="live-monitoring">
-                <h3>📊 LIVE ACTIVITY MONITOR</h3>
-                <div class="activity-feed" id="adminActivityFeed"></div>
-            </div>
-        </div>
-
-        <!-- Accounts Database Tab -->
-        <div id="accountsTab" class="tab-pane">
-            <div class="database-controls">
-                <button class="db-btn primary" onclick="importAccounts()">
-                    <i class="fas fa-file-import"></i> BULK IMPORT
-                </button>
-                <button class="db-btn success" onclick="generateAccounts()">
-                    <i class="fas fa-plus"></i> AUTO-GENERATE
-                </button>
-                <button class="db-btn danger" onclick="clearAllAccounts()">
-                    <i class="fas fa-trash"></i> PURGE DB
-                </button>
-            </div>
-            
-            <div class="database-view">
-                <!-- Advanced accounts management -->
-            </div>
-        </div>
-
-        <!-- Users Control Tab -->
-        <div id="usersTab" class="tab-pane">
-            <div class="user-controls">
-                <div class="search-section">
-                    <input type="text" id="userSearchAdvanced" placeholder="🔍 Search users by ID, IP, email..." 
-                           class="advanced-search">
-                    <button onclick="advancedUserSearch()" class="search-btn-advanced">
-                        <i class="fas fa-search"></i> DEEP SCAN
-                    </button>
-                </div>
-                
-                <div class="user-actions-grid">
-                    <button class="action-btn" onclick="massMessageUsers()">
-                        <i class="fas fa-broadcast-tower"></i> MASS MESSAGE
-                    </button>
-                    <button class="action-btn" onclick="exportUserData()">
-                        <i class="fas fa-download"></i> EXPORT DATA
-                    </button>
-                    <button class="action-btn danger" onclick="banMultipleUsers()">
-                        <i class="fas fa-ban"></i> BATCH BAN
-                    </button>
-                </div>
-            </div>
-            
-            <div class="users-grid-advanced" id="usersGridAdvanced"></div>
-        </div>
-
-        <!-- Financial Tab -->
-        <div id="financialTab" class="tab-pane">
-            <div class="revenue-dashboard">
-                <div class="financial-cards">
-                    <div class="finance-card">
-                        <h4>TOTAL REVENUE</h4>
-                        <span class="amount">₹<span id="totalRevenue">0</span></span>
-                    </div>
-                    <div class="finance-card">
-                        <h4>PENDING</h4>
-                        <span class="amount pending">₹<span id="pendingRevenue">0</span></span>
-                    </div>
-                    <div class="finance-card">
-                        <h4>TODAY'S INCOME</h4>
-                        <span class="amount today">₹<span id="todayRevenue">0</span></span>
-                    </div>
-                </div>
-                
-                <div class="payment-verification">
-                    <h4>💰 PAYMENT VERIFICATION QUEUE</h4>
-                    <div id="paymentQueue"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Automation Tab -->
-        <div id="automationTab" class="tab-pane">
-            <div class="automation-controls">
-                <h3>🤖 SMART AUTOMATION SYSTEM</h3>
-                
-                <div class="automation-card">
-                    <h4>🔄 AUTO-ACCOUNT REFILL</h4>
-                    <div class="toggle-group">
-                        <label class="switch">
-                            <input type="checkbox" id="autoRefillToggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <span>Enable automatic account refill</span>
-                    </div>
-                </div>
-                
-                <div class="automation-card">
-                    <h4>📧 AUTO-RESPONSE SYSTEM</h4>
-                    <textarea id="autoResponseTemplate" class="auto-response-area" 
-                              placeholder="Enter auto-response template..."></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Security Tab -->
-        <div id="securityTab" class="tab-pane">
-            <div class="security-dashboard">
-                <h3>🛡️ SECURITY COMMAND CENTER</h3>
-                
-                <div class="security-cards">
-                    <div class="security-card">
-                        <h4>IP MONITORING</h4>
-                        <div class="ip-list" id="suspiciousIPs"></div>
-                    </div>
-                    
-                    <div class="security-card">
-                        <h4>ACCESS LOGS</h4>
-                        <div class="access-logs" id="adminAccessLogs"></div>
-                    </div>
-                </div>
-                
-                <div class="security-actions">
-                    <button class="security-btn" onclick="backupSystem()">
-                        <i class="fas fa-save"></i> BACKUP SYSTEM
-                    </button>
-                    <button class="security-btn danger" onclick="resetSystem()">
-                        <i class="fas fa-exclamation-triangle"></i> FACTORY RESET
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
